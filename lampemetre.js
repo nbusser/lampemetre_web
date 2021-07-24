@@ -1,15 +1,19 @@
 var xValues = [50,60,70,80,90,100,110,120,130,140,150];
 
 var yValues = [7,8,8,9,9,9,10,11,14,14,15];
-var yValues2 = [15,3,1,5,9,9,10,11,14,14,15];
+var yValues2 = [15,3,1,15,4,3,0,1,4,6,15];
+var yValues3 = [5,2,5,9,2,6,9,1,14,7,3];
 
-var add_line_chart = function(chart, color, data) {
+groups_colors = ["rgba(0,0,255,1.0)", "rgba(255,0,0,1.0)"]
+var add_line_chart = function(chart, data, group) {
+  var color = groups_colors[group%groups_colors.length]
   line = {
     fill: false,
     lineTension: 0,
-    backgroundColor: "rgba(0,0,255,1.0)",
+    backgroundColor: color,
     borderColor: color,
-    data: data
+    data: data,
+    stack: group,
   };
   chart.data.datasets.push(line);
   chart.update();
@@ -39,8 +43,9 @@ var chart = new Chart("chart", {
   },
 });
 
-add_line_chart(chart, "rgba(0,0,255,1.0)", yValues);
-add_line_chart(chart, "rgba(0,0,255,1.0)", yValues2);
+add_line_chart(chart, yValues, 0);
+add_line_chart(chart, yValues2, 0);
+add_line_chart(chart, yValues3, 1);
 
 var n_measure = 0
 var measure = function(chart, e) {
@@ -57,11 +62,6 @@ var measure = function(chart, e) {
         index = i;
       }
     }
-    // var index = chart.options.annotation.annotations.indexOf(
-    //   (a) => {
-    //     return a.value == val_x;
-    //   }
-    // );
 
     if (index == undefined) {
       n_measure++;
