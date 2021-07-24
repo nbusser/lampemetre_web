@@ -55,25 +55,23 @@ var measure = function(e) {
     const index_x = chart.scales['x-axis-0'].getValueForPixel(canvasPosition.x);
     const val_x = xValues[index_x];
 
-    let index = undefined;
-    for (let i = 0; i < chart.options.annotation.annotations.length && index == undefined; i++) {
-      let annotation_val = chart.options.annotation.annotations[i].value
-      if(annotation_val == val_x) {
-        index = i;
-      }
-    }
+    let annotation = chart.options.annotation.annotations.find((a) => {return a.value == val_x});
 
-    if (index == undefined) {
-      n_measure++;
-      addAnnotationVertical(val_x, "Mesure " + n_measure);
+    if (!annotation) {
+      add_mesure(val_x);
     }
     else {
-      remove_annotation(index);
+      delete_mesure(val_x);
     }
   }
 }
 
-var addAnnotationVertical = function(xValue, text){
+var add_mesure = function(val_x) {
+  n_measure++;
+  add_vertical_annotation(val_x, "Mesure " + n_measure);
+}
+
+var add_vertical_annotation = function(xValue, text){
 	var line = 'mesure_' + xValue;
 	chart.options.annotation.annotations.push(
 		{
@@ -94,6 +92,18 @@ var addAnnotationVertical = function(xValue, text){
 			}
 		});
     chart.update();
+}
+
+var delete_mesure = function(val_x) {
+  let index = undefined;
+  for (let i = 0; i < chart.options.annotation.annotations.length && index == undefined; i++) {
+    let annotation_val = chart.options.annotation.annotations[i].value
+    if(annotation_val == val_x) {
+      index = i;
+    }
+  }
+
+  remove_annotation(index)
 }
 
 var remove_annotation = function(position) {
