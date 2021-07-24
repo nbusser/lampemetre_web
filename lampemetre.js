@@ -44,9 +44,9 @@ var yValues = [7,8,8,9,9,9,10,11,14,14,15];
 var yValues2 = [15,3,1,15,4,3,0,1,4,6,15];
 var yValues3 = [5,2,5,9,2,6,9,1,14,7,3];
 
-groups_colors = ["rgba(0,0,255,1.0)", "rgba(255,0,0,1.0)"]
+groups_colors = ["rgba(0,0,255,1.0)", "rgba(255,0,0,1.0)", "rgba(255,0,0,1.0)", "rgba(255,0,255,1.0)"]
 var add_line_chart = function(data, group) {
-  var color = groups_colors[group%groups_colors.length]
+  var color = groups_colors[group%groups_colors.length];
   line = {
     fill: false,
     lineTension: 0,
