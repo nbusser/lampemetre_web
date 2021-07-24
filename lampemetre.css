@@ -1,3 +1,8 @@
 #measures {
-    display: flex
+    display: flex;
+}
+
+.measure {
+    font-size: 75%;
+    margin: 1%;
 }

@@ -68,7 +68,16 @@ var measure = function(e) {
 
 var add_mesure = function(val_x) {
   n_measure++;
-  add_vertical_annotation(val_x, "Mesure " + n_measure);
+  let mesure_name = "Mesure " + n_measure;
+  add_vertical_annotation(val_x, mesure_name);
+
+  let measure_div = document.createElement("div");
+  measure_div.id = "measure_" + val_x;
+  measure_div.className = "measure";
+  measure_div.textContent = mesure_name;
+
+  let all_measures_div = document.getElementById("measures");
+  all_measures_div.appendChild(measure_div);
 }
 
 var add_vertical_annotation = function(xValue, text){
@@ -95,6 +104,10 @@ var add_vertical_annotation = function(xValue, text){
 }
 
 var delete_mesure = function(val_x) {
+  let all_measures_div = document.getElementById("measures");
+  let measure_div = document.getElementById("measure_" + val_x);
+  all_measures_div.removeChild(measure_div);
+
   let index = undefined;
   for (let i = 0; i < chart.options.annotation.annotations.length && index == undefined; i++) {
     let annotation_val = chart.options.annotation.annotations[i].value
