@@ -10,8 +10,12 @@ document.getElementById("btn_capture").onclick = function() {
 };
 
 document.getElementById("btn_clear").onclick = function() {
-  clear_mesures();
+  clear_measures();
   clear_lines();
+};
+
+document.getElementById("btn_clear_measures").onclick = function() {
+  clear_measures();
 };
 
 var perform_capture = async function() {
@@ -164,7 +168,7 @@ var remove_annotation = function(position) {
   chart.update();
 }
 
-var clear_mesures = function() {
+var clear_measures = function() {
   let all_measures_div = document.getElementById("measures");
   while (all_measures_div.firstChild) {
     all_measures_div.removeChild(all_measures_div.lastChild);
