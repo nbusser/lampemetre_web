@@ -40,20 +40,41 @@ var chart = new Chart("chart", {
 });
 
 add_line_chart(chart, "rgba(0,0,255,1.0)", yValues);
-add_line_chart(chart, "rgba(255,0,0,1.0)", yValues2);
+add_line_chart(chart, "rgba(0,0,255,1.0)", yValues2);
 
+var n_measure = 0
 var measure = function(chart, e) {
   // Checks if user is hovering a valid sample point
   if(chart.tooltip._active.length) {
     const canvasPosition = Chart.helpers.getRelativePosition(e, chart);
     const index_x = chart.scales['x-axis-0'].getValueForPixel(canvasPosition.x);
+    const val_x = xValues[index_x];
 
-    addAnnotationVertical(xValues[index_x], "test")
+    let index = undefined;
+    for (let i = 0; i < chart.options.annotation.annotations.length && index == undefined; i++) {
+      let annotation_val = chart.options.annotation.annotations[i].value
+      if(annotation_val == val_x) {
+        index = i;
+      }
+    }
+    // var index = chart.options.annotation.annotations.indexOf(
+    //   (a) => {
+    //     return a.value == val_x;
+    //   }
+    // );
+
+    if (index == undefined) {
+      n_measure++;
+      addAnnotationVertical(val_x, "Mesure " + n_measure);
+    }
+    else {
+      remove_annotation(index);
+    }
   }
 }
 
-function addAnnotationVertical(xValue, text){
-	var line = 'line' + xValue;
+var addAnnotationVertical = function(xValue, text){
+	var line = 'mesure_' + xValue;
 	chart.options.annotation.annotations.push(
 		{
 			drawTime: "afterDatasetsDraw",
@@ -75,7 +96,12 @@ function addAnnotationVertical(xValue, text){
     chart.update();
 }
 
-function clear_annotations() {
+var remove_annotation = function(position) {
+  chart.options.annotation.annotations.splice(position, 1);
+  chart.update();
+}
+
+var clear_annotations = function() {
   chart.options.annotation.annotations = [];
   chart.update();
 }
