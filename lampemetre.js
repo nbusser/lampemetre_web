@@ -169,6 +169,7 @@ var clear_mesures = function() {
   while (all_measures_div.firstChild) {
     all_measures_div.removeChild(all_measures_div.lastChild);
   }
+  n_measure = 0;
   clear_annotations();
 }
 
