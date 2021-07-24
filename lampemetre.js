@@ -1,6 +1,41 @@
+document.getElementById("btn_capture").onclick = function() {
+  if ("serial" in navigator) {
+    perform_capture().then().catch(error => {
+      alert("Erreur pendant la capture: " + error)
+    });
+  }
+  else {
+    alert("Capture impossible. Votre navigateur ne supporte pas web serial API")
+  }
+};
+
 document.getElementById("btn_clear").onclick = function() {
   clear_mesures();
   clear_lines();
+};
+
+var perform_capture = async function() {
+  // Get all serial ports the user has previously granted the website access to.
+  const ports = await navigator.serial.getPorts();
+  var port;
+
+  if(ports.length > 0) {
+    port = ports[0];
+  } else {
+    // Filter on devices with the valid USB Vendor/Product IDs.
+    const filters = [
+      { usbVendorId: 0x2341, usbProductId: 0x0043 },
+      { usbVendorId: 0x2341, usbProductId: 0x0001 }
+    ];
+
+    // Prompt user to select an Arduino Uno device.
+    port = await navigator.serial.requestPort({ /*filters*/ });
+
+    const { usbProductId, usbVendorId } = port.getInfo();
+  }
+
+  // Wait for the serial port to open.
+  await port.open({ baudRate: 9600 });
 }
 
 var xValues = [50,60,70,80,90,100,110,120,130,140,150];
