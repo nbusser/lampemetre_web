@@ -12,6 +12,42 @@
         <canvas id="chart" style="width:100%;max-width:700px"></canvas>
 
         <section id="control_panel">
+            <div id=params>
+                <div>
+                    <label>Vgrille:</label>
+                    <div>
+                        <label for="vgrille_min">Min:</label>
+                        <input type="number" id="vgrille_min" name="vgrille_min">
+                    </div>
+                    <div>
+                        <label for="vgrille_max">Max:</label>
+                        <input type="number" id="vgrille_max" name="vgrille_max">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="vplaque_max">Vplaque Max:</label>
+                    <input type="number" id="vplaque_max" name="vplaque_max">
+                </div>
+
+                <div>
+                    <label for="icathode_max">Icathode Max:</label>
+                    <input type="number" id="icathode_max" name="icathode_max">
+                </div>
+
+                <div>
+                    <label for="mode">Mode:</label>
+                    <div>
+                        <input type="radio" id="mode_triode" name="mode" value="triode" checked>
+                        <label for="mode_triode">Triode</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="mode_autre" name="mode" value="autre">
+                        <label for="mode_autre">Autre</label>
+                    </div>
+                </div>
+            </div>
+
             <button>Mesure</button>
             <button id="btn_clear">Clear</button>
         </section>
