@@ -5,7 +5,7 @@ var yValues2 = [15,3,1,15,4,3,0,1,4,6,15];
 var yValues3 = [5,2,5,9,2,6,9,1,14,7,3];
 
 groups_colors = ["rgba(0,0,255,1.0)", "rgba(255,0,0,1.0)"]
-var add_line_chart = function(chart, data, group) {
+var add_line_chart = function(data, group) {
   var color = groups_colors[group%groups_colors.length]
   line = {
     fill: false,
@@ -19,12 +19,12 @@ var add_line_chart = function(chart, data, group) {
   chart.update();
 };
 
-var remove_line_chart = function(chart, position) {
+var remove_line_chart = function(position) {
   chart.data.datasets.splice(position, 1);
   chart.update();
 }
 
-var clear_chart = function(chart) {
+var clear_chart = function() {
   chart.data.datasets = []
   chart.update();
 }
@@ -36,19 +36,19 @@ var chart = new Chart("chart", {
     datasets: [],
   },
   options: {
-    onClick: (e) => measure(chart, e),
+    onClick: (e) => measure(e),
     annotation: {
       annotations: []
     },
   },
 });
 
-add_line_chart(chart, yValues, 0);
-add_line_chart(chart, yValues2, 0);
-add_line_chart(chart, yValues3, 1);
+add_line_chart(yValues, 0);
+add_line_chart(yValues2, 0);
+add_line_chart(yValues3, 1);
 
 var n_measure = 0
-var measure = function(chart, e) {
+var measure = function(e) {
   // Checks if user is hovering a valid sample point
   if(chart.tooltip._active.length) {
     const canvasPosition = Chart.helpers.getRelativePosition(e, chart);
