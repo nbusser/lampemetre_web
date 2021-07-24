@@ -1,3 +1,8 @@
+document.getElementById("btn_clear").onclick = function() {
+  clear_mesures();
+  clear_lines();
+}
+
 var xValues = [50,60,70,80,90,100,110,120,130,140,150];
 
 var yValues = [7,8,8,9,9,9,10,11,14,14,15];
@@ -24,7 +29,7 @@ var remove_line_chart = function(position) {
   chart.update();
 }
 
-var clear_chart = function() {
+var clear_lines = function() {
   chart.data.datasets = []
   chart.update();
 }
@@ -122,6 +127,14 @@ var delete_mesure = function(val_x) {
 var remove_annotation = function(position) {
   chart.options.annotation.annotations.splice(position, 1);
   chart.update();
+}
+
+var clear_mesures = function() {
+  let all_measures_div = document.getElementById("measures");
+  while (all_measures_div.firstChild) {
+    all_measures_div.removeChild(all_measures_div.lastChild);
+  }
+  clear_annotations();
 }
 
 var clear_annotations = function() {
