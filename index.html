@@ -1,14 +1,26 @@
 <!DOCTYPE html>
 <html>
-<body>
 
-<h1>Lampemetre<h1>
-<canvas id="chart" style="width:100%;max-width:700px"></canvas>
+    <head>
+        <link rel="stylesheet" href="lampemetre.css">
+    </head>
 
-</body>
+    <body>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.min.js"></script>
-<script src="lampemetre.js"></script>
+        <h1>Lampemetre<h1>
+
+        <canvas id="chart" style="width:100%;max-width:700px"></canvas>
+
+        <section id="control_panel">
+            <button>Mesure</button>
+        </section>
+
+        <section id="measures"></section>
+
+    </body>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.min.js"></script>
+    <script src="lampemetre.js"></script>
 
 </html>
