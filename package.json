@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "eslint src/ && tsc --noEmit && parcel serve src/index.html"
+    "serve": "eslint './src/**/*.{ts,tsx}' && tsc --noEmit && parcel serve src/index.html",
+    "fmt": "eslint --fix './src/**/*.{ts,tsx}'"
   },
   "repository": {
     "type": "git",
@@ -37,7 +38,7 @@
     "@typescript-eslint/eslint-plugin": "^4.28.4",
     "@typescript-eslint/parser": "^4.28.4",
     "eslint": "^7.31.0",
-    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-airbnb-typescript": "^12.3.1",
     "eslint-plugin-import": "^2.23.4",
     "typescript": "^4.3.5"
   }
