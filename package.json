@@ -1,0 +1,44 @@
+{
+  "name": "lampemetre_web",
+  "version": "1.0.0",
+  "description": "Re-writting of LibertyBASIC program lampemetre",
+  "main": "lampemetre.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "eslint src/ && tsc --noEmit && parcel serve src/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nbusser/lampemetre_web.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nbusser/lampemetre_web/issues"
+  },
+  "homepage": "https://github.com/nbusser/lampemetre_web#readme",
+  "dependencies": {
+    "@parcel/config-default": "^2.0.0-alpha.3",
+    "chart.js": "^3.4.1",
+    "chartjs-plugin-annotation": "^1.0.2"
+  },
+  "browserslist": [
+    "last 3 and_chr versions",
+    "last 3 chrome versions",
+    "last 3 opera versions",
+    "last 3 ios_saf versions",
+    "last 3 safari versions"
+  ],
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/parser": "^4.28.4",
+    "eslint": "^7.31.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "typescript": "^4.3.5"
+  }
+}
