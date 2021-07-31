@@ -49,7 +49,6 @@ var perform_capture = async function() {
 }
 
 var acquire_u_anode = async function(serial_connection) {
-  let tensions_anode;
   let serial_reader = serial_connection.readable.getReader();
   let serial_writer = serial_connection.writable.getWriter();
   try{
@@ -57,7 +56,7 @@ var acquire_u_anode = async function(serial_connection) {
     await serial_writer.write(data);
 
     let bytes_to_read = 128;
-    read_buffer = await read_n_bytes_serial_with_timeout(serial_reader, bytes_to_read, 1500);
+    read_buffer = await read_n_bytes_serial_pack_uint16(serial_reader, bytes_to_read, 1500);
   } catch {
     throw "Impossible d'obtenir les valeurs de tension anode"
   } finally {
@@ -67,13 +66,28 @@ var acquire_u_anode = async function(serial_connection) {
   }
 
   let u_anode_samples = []
-  for(let i = 0; i < read_buffer.length; i+= 2) {
-    let voltage = (read_buffer[i] << 8) + read_buffer[i+1];
-    voltage = Math.round(voltage * 4.6875);
+  for(let i = 0; i < read_buffer.length; i++) {
+    let voltage = Math.round(read_buffer[i] * 4.6875);
     u_anode_samples.push(voltage);
   }
 
   return u_anode_samples;
+}
+
+var read_n_bytes_serial_pack_uint16 = async function(serial_reader, n_bytes, timeout) {
+  if(n_bytes % 2 != 0) {
+    throw "n_bytes must be even to pack reading result in 16-bits words"
+  }
+
+  let read_buffer = await read_n_bytes_serial_with_timeout(serial_reader, n_bytes, timeout);
+
+  let uint16_values = []
+  for(let i = 0; i < read_buffer.length; i+= 2) {
+    let uin16_value = (read_buffer[i] << 8) + read_buffer[i+1];
+    uint16_values.push(uin16_value);
+  }
+
+  return uint16_values;
 }
 
 var read_n_bytes_serial_with_timeout = function(serial_reader, n_bytes, timeout) {
@@ -88,6 +102,10 @@ var read_n_bytes_serial = async function(serial_reader, n_bytes) {
   const read_buffer = [];
   while(i < n_bytes) {
     const { value, _ } = await serial_reader.read();
+
+    if(!value) {
+      throw "read value is empty"
+    }
 
     for(j = 0; j < value.length; j++) {
       read_buffer.push(value[j]);
