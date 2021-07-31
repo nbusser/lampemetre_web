@@ -28,12 +28,11 @@ var perform_capture = async function() {
   } else {
     // Filter on devices with the valid USB Vendor/Product IDs.
     const filters = [
-      { usbVendorId: 0x2341, usbProductId: 0x0043 },
-      { usbVendorId: 0x2341, usbProductId: 0x0001 }
+      { usbVendorId: 0x0403, usbProductId: 0x6001 }
     ];
 
     // Prompt user to select an Arduino Uno device.
-    port = await navigator.serial.requestPort({ /*filters*/ });
+    port = await navigator.serial.requestPort({ filters });
 
     const { usbProductId, usbVendorId } = port.getInfo();
   }
