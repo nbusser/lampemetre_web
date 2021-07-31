@@ -48,12 +48,21 @@ var perform_capture = async function() {
   let tensions_anode = await acquire_u_anode(port);
 }
 
+var write_byte_serial = async function(serial_connection, value) {
+  let serial_writer = serial_connection.writable.getWriter();
+  const data = new Uint8Array([value]);
+  try {
+    await serial_writer.write(data);
+  }
+  finally {
+    serial_writer.releaseLock();
+  }
+}
+
 var acquire_u_anode = async function(serial_connection) {
   let serial_reader = serial_connection.readable.getReader();
-  let serial_writer = serial_connection.writable.getWriter();
   try{
-    const data = new Uint8Array([101]);
-    await serial_writer.write(data);
+    write_byte_serial(serial_connection, 101);
 
     let bytes_to_read = 128;
     read_buffer = await read_n_bytes_serial_pack_uint16(serial_reader, bytes_to_read, 1500);
@@ -62,7 +71,6 @@ var acquire_u_anode = async function(serial_connection) {
   } finally {
     serial_reader.cancel();
     serial_reader.releaseLock();
-    serial_writer.releaseLock();
   }
 
   let u_anode_samples = []
