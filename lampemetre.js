@@ -21,10 +21,10 @@ document.getElementById("btn_clear_measures").onclick = function() {
 var perform_capture = async function() {
   // Get all serial ports the user has previously granted the website access to.
   const ports = await navigator.serial.getPorts();
-  var port;
+  var serial_connection;
 
   if(ports.length > 0) {
-    port = ports[0];
+    serial_connection = ports[0];
   } else {
     // Filter on devices with the valid USB Vendor/Product IDs.
     const filters = [
@@ -32,20 +32,20 @@ var perform_capture = async function() {
     ];
 
     // Prompt user to select an Arduino Uno device.
-    port = await navigator.serial.requestPort({ filters });
+    serial_connection = await navigator.serial.requestPort({ filters });
 
-    const { usbProductId, usbVendorId } = port.getInfo();
+    const { usbProductId, usbVendorId } = serial_connection.getInfo();
   }
 
   // Wait for the serial port to open.
-  await port.open({
+  await serial_connection.open({
     baudRate: 2400,
     dataBits: 8,
     stopBits: 2,
     parity: "none"
   });
 
-  let tensions_anode = await acquire_u_anode(port);
+  let tensions_anode = await acquire_u_anode(serial_connection);
 }
 
 var write_byte_serial = async function(serial_connection, value) {
