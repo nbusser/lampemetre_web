@@ -45,19 +45,20 @@ var perform_capture = async function() {
     parity: "none"
   });
 
-  let acquire_u_anode_with_timeout = function(serial_reader, serial_writer, timeout) {
-    return new Promise(function(resolve, reject) {
-      acquire_u_anode(serial_reader, serial_writer).then(resolve, reject);
-      setTimeout(reject, timeout)
-    });
-  }
+  let tensions_anode = await acquire_u_anode(port);
+}
 
+var acquire_u_anode = async function(serial_connection) {
   let tensions_anode;
-  let serial_reader = port.readable.getReader();
-  let serial_writer = port.writable.getWriter()
+  let serial_reader = serial_connection.readable.getReader();
+  let serial_writer = serial_connection.writable.getWriter();
   try{
-    tensions_anode = await acquire_u_anode_with_timeout(serial_reader, serial_writer, 1500);
-  } catch(error) {
+    const data = new Uint8Array([101]);
+    await serial_writer.write(data);
+
+    let bytes_to_read = 128;
+    read_buffer = await read_n_bytes_serial_with_timeout(serial_reader, bytes_to_read, 1500);
+  } catch {
     throw "Impossible d'obtenir les valeurs de tension anode"
   } finally {
     serial_reader.cancel();
@@ -66,30 +67,34 @@ var perform_capture = async function() {
   }
 
   let u_anode_samples = []
-  for(i = 0; i < tensions_anode.length; i+= 2) {
-    let voltage = (tensions_anode[i] << 8) + tensions_anode[i+1]
-    voltage = Math.round(voltage * 4.6875)
-    u_anode_samples.push(voltage)
+  for(let i = 0; i < read_buffer.length; i+= 2) {
+    let voltage = (read_buffer[i] << 8) + read_buffer[i+1];
+    voltage = Math.round(voltage * 4.6875);
+    u_anode_samples.push(voltage);
   }
 
-  console.log(u_anode_samples)
+  return u_anode_samples;
 }
 
-var acquire_u_anode = async function(serial_reader, serial_writer) {
-  const data = new Uint8Array([101]);
-  await serial_writer.write(data);
+var read_n_bytes_serial_with_timeout = function(serial_reader, n_bytes, timeout) {
+  return new Promise(function(resolve, reject) {
+    read_n_bytes_serial(serial_reader, n_bytes).then(resolve, reject);
+    setTimeout(() => {reject("Timeout while reading")}, timeout)
+  });
+}
 
-  i = 0;
-  const read_buffer = []
-  while(i < 127) {
+var read_n_bytes_serial = async function(serial_reader, n_bytes) {
+  let i = 0;
+  const read_buffer = [];
+  while(i < n_bytes) {
     const { value, _ } = await serial_reader.read();
 
     for(j = 0; j < value.length; j++) {
       read_buffer.push(value[j]);
     }
-    i+=value.length
+    i+=value.length;
   }
-  return read_buffer
+  return read_buffer;
 }
 
 var xValues = [50,60,70,80,90,100,110,120,130,140,150];
