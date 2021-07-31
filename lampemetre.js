@@ -1,6 +1,6 @@
 document.getElementById("btn_capture").onclick = function() {
   if ("serial" in navigator) {
-    perform_capture().then().catch(error => {
+    perform_capture(16, [1]).then().catch(error => {
       alert("Erreur pendant la capture: " + error)
     });
   }
@@ -18,7 +18,7 @@ document.getElementById("btn_clear_measures").onclick = function() {
   clear_measures();
 };
 
-var perform_capture = async function() {
+var perform_capture = async function(i_cathode_max, u_grids) {
   // Get all serial ports the user has previously granted the website access to.
   const ports = await navigator.serial.getPorts();
   var serial_connection;
@@ -46,6 +46,15 @@ var perform_capture = async function() {
   });
 
   let tensions_anode = await acquire_u_anode(serial_connection);
+
+  let sampling_mode = i_cathode_max < 32 ? 32 : 50;
+  write_byte_serial(serial_connection, sampling_mode);
+
+  await sleep(100);
+}
+
+var sleep = async function(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 var write_byte_serial = async function(serial_connection, value) {
