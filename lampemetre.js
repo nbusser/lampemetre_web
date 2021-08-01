@@ -9,6 +9,17 @@ document.getElementById("btn_capture").onclick = function() {
   }
 };
 
+document.getElementById("btn_test").onclick = function() {
+  if ("serial" in navigator) {
+    perform_test().then().catch(error => {
+      alert("Erreur pendant le test: " + error)
+    });
+  }
+  else {
+    alert("Test impossible. Votre navigateur ne supporte pas web serial API")
+  }
+};
+
 document.getElementById("btn_clear").onclick = function() {
   clear_measures();
   clear_lines();
@@ -18,32 +29,141 @@ document.getElementById("btn_clear_measures").onclick = function() {
   clear_measures();
 };
 
-var perform_capture = async function(i_cathode_max, u_grids) {
-  // Get all serial ports the user has previously granted the website access to.
-  const ports = await navigator.serial.getPorts();
-  var serial_connection;
+var get_serial_connection = async function() {
+    // Get all serial ports the user has previously granted the website access to.
+    const ports = await navigator.serial.getPorts();
+    var serial_connection;
 
-  if(ports.length > 0) {
-    serial_connection = ports[0];
-  } else {
-    // Filter on devices with the valid USB Vendor/Product IDs.
-    const filters = [
-      { usbVendorId: 0x0403, usbProductId: 0x6001 }
-    ];
+    if(ports.length > 0) {
+      serial_connection = ports[0];
+    } else {
+      // Filter on devices with the valid USB Vendor/Product IDs.
+      const filters = [
+        { usbVendorId: 0x0403, usbProductId: 0x6001 }
+      ];
 
-    // Prompt user to select an Arduino Uno device.
-    serial_connection = await navigator.serial.requestPort({ filters });
+      // Prompt user to select an Arduino Uno device.
+      serial_connection = await navigator.serial.requestPort({ filters });
 
-    const { usbProductId, usbVendorId } = serial_connection.getInfo();
+      const { usbProductId, usbVendorId } = serial_connection.getInfo();
+    }
+
+    // Wait for the serial port to open.
+    await serial_connection.open({
+      baudRate: 2400,
+      dataBits: 8,
+      stopBits: 2,
+      parity: "none"
+    });
+
+    return serial_connection;
+}
+
+var perform_test = async function() {
+  let serial_connection = await get_serial_connection();
+
+  let serial_reader = serial_connection.readable.getReader();
+  let serial_writer = serial_connection.writable.getWriter();
+
+  let u_anode_max = [];
+  let i_cathode_32 = [];
+  let i_cathode_256 = [];
+  let u_grid = [];
+
+  try {
+    write_byte_serial(serial_writer, 124);
+
+    let to_read_commands = 20;
+    let leftovers = [];
+
+    while(to_read_commands > 0) {
+      read_buffer = await read_n_bytes_serial_with_timeout(serial_reader, 3-leftovers.length, 500);
+      leftovers.push(...read_buffer);
+      while(leftovers.length/3 >= 1) {
+        to_read_commands--;
+        let received = leftovers.splice(0, 3);
+
+        let category = received[0];
+        let value = (received[1] << 8) + received[2];
+
+        switch(category) {
+          case 126:
+            u_anode_max.push(value * 0.46875);
+            break;
+          case 151:
+            i_cathode_32.push(value * 0.03125);
+            break;
+          case 111:
+            i_cathode_256.push(value * 0.25);
+            break;
+          case 107:
+            u_grid.push(value);
+            break;
+          default:
+            throw "Le programme a recu une mesure de test invalide"
+        }
+      }
+    }
+  } finally {
+    await write_byte_serial(serial_writer, 0);
+
+    serial_reader.cancel();
+    serial_reader.releaseLock();
+
+    await serial_writer.close();
+
+    await serial_connection.close();
   }
 
-  // Wait for the serial port to open.
-  await serial_connection.open({
-    baudRate: 2400,
-    dataBits: 8,
-    stopBits: 2,
-    parity: "none"
-  });
+  let diagnostic_message = "Test terminé\n"
+
+  let u_anode_ref = 280;
+  let u_anode_error = detect_error_test(u_anode_max, u_anode_ref, 0.05, 0);
+
+  let i_cathode_32_ref = 0;
+  let i_32_cathode_error = detect_error_test(i_cathode_32, i_cathode_32_ref, 0, 0.5);
+
+  let i_cathode_256_ref = 0;
+  let i_256_cathode_error = detect_error_test(i_cathode_256, i_cathode_256_ref, 0, 0.5);
+
+  let u_grid_ref = 31;
+  let u_grid_error = detect_error_test(u_grid, u_grid_ref, 0, 0);
+
+  if(!(u_anode_error || i_32_cathode_error || i_256_cathode_error || u_grid_error)) {
+    diagnostic_message += "Aucune anomalie à signaler";
+  } else {
+    diagnostic_message += "Anomalies détectées:\n"
+
+    if(u_anode_error) {
+      diagnostic_message += "-Tension plaque max: " + u_anode_error + " capturé (tension de référence " + u_anode_ref + "V)\n";
+    }
+    if(i_32_cathode_error) {
+      diagnostic_message += "-Intensité cathode 32mA: " + i_32_cathode_error + " capturé (intensité de référence " + i_cathode_32_ref + "mA)\n";
+    }
+    if(i_256_cathode_error) {
+      diagnostic_message += "-Intensité cathode 32mA: " + i_256_cathode_error + " capturé (intensité de référence " + i_cathode_256_ref + "mA)\n";
+    }
+    if(u_grid_error) {
+      diagnostic_message += "-Tension grille: -" + u_grid_error + " capturé (tension de référence -" + u_grid_ref + "V)\n";
+    }
+  }
+  alert(diagnostic_message);
+}
+
+var detect_error_test = function(array, ref_value, tolerance, tolerance_beta) {
+  error_val = undefined;
+  for(let i = 0; i < array.length; i++) {
+    let element = array[i];
+    if(Math.abs(ref_value-element) > tolerance*ref_value + tolerance_beta) {
+      error_val = element;
+      break;
+    }
+  }
+  return error_val;
+}
+
+var perform_capture = async function(i_cathode_max, u_grids) {
+  let serial_connection = await get_serial_connection();
 
   let serial_reader = serial_connection.readable.getReader();
   let serial_writer = serial_connection.writable.getWriter();
