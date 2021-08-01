@@ -51,6 +51,16 @@ var perform_capture = async function(i_cathode_max, u_grids) {
   write_byte_serial(serial_connection, sampling_mode);
 
   await sleep(100);
+
+  for(let i = 0; i < u_grids.length; i++) {
+    let u_grid = u_grids[i];
+
+    let current_cathode = await acquire_i_cathode(serial_connection, u_grid);
+    console.log("fin" + current_cathode);
+    await sleep(200);
+  }
+
+  write_byte_serial(serial_connection, 105);
 }
 
 var sleep = async function(ms) {
@@ -89,6 +99,29 @@ var acquire_u_anode = async function(serial_connection) {
   }
 
   return u_anode_samples;
+}
+
+var acquire_i_cathode = async function(serial_connection, u_grid) {
+  let serial_reader = serial_connection.readable.getReader();
+  let serial_writer = serial_connection.writable.getWriter();
+
+  try{
+    let u_grid_to_send = 150 + (u_grid * 2);
+    const data = new Uint8Array([u_grid_to_send]);
+    await serial_writer.write(data);
+
+    let bytes_to_read = 128;
+    read_buffer = await read_n_bytes_serial_pack_uint16(serial_reader, bytes_to_read, 15000);
+  } catch(error) {
+    alert(error)
+    throw "Impossible d'obtenir les valeurs d'intensité cathode"
+  } finally {
+    serial_reader.cancel();
+    serial_reader.releaseLock();
+    serial_writer.releaseLock();
+  }
+
+  return read_buffer;
 }
 
 var read_n_bytes_serial_pack_uint16 = async function(serial_reader, n_bytes, timeout) {
