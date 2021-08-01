@@ -233,7 +233,7 @@ var acquire_i_cathode = async function(serial_reader, serial_writer, u_grid) {
 
     var i_cathode_sample = []
     for(let i = 0; i < read_buffer.length; i++) {
-      let current = Math.round(read_buffer[i] * 0.390625)/10;
+      let current = read_buffer[i] * 0.03125;
       i_cathode_sample.push(current);
       console.log(i_cathode_sample)
     }
