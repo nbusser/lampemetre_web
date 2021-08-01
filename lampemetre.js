@@ -49,6 +49,8 @@ var perform_capture = async function(i_cathode_max, u_grids) {
   let serial_writer = serial_connection.writable.getWriter();
   try {
     let tensions_anode = await acquire_u_anode(serial_reader, serial_writer);
+    chart.data.labels = tensions_anode;
+    chart.update();
 
     let sampling_mode = i_cathode_max < 32 ? 32 : 50;
     write_byte_serial(serial_writer, sampling_mode);
@@ -58,6 +60,7 @@ var perform_capture = async function(i_cathode_max, u_grids) {
     for(let i = 0; i < u_grids.length; i++) {
       let u_grid = u_grids[i];
       let current_cathode = await acquire_i_cathode(serial_reader, serial_writer, u_grid);
+      add_line_chart(current_cathode, 0);
       await sleep(200);
     }
 
@@ -201,9 +204,9 @@ var chart = new Chart("chart", {
   },
 });
 
-add_line_chart(yValues, 0);
-add_line_chart(yValues2, 0);
-add_line_chart(yValues3, 1);
+//add_line_chart(yValues, 0);
+//add_line_chart(yValues2, 0);
+//add_line_chart(yValues3, 1);
 
 var n_measure = 0
 var measure = function(e) {
