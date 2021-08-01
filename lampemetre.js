@@ -96,7 +96,7 @@ var acquire_u_anode = async function(serial_reader, serial_writer) {
 
   let u_anode_samples = []
   for(let i = 0; i < read_buffer.length; i++) {
-    let voltage = Math.round(read_buffer[i] * 4.6875);
+    let voltage = Math.round(read_buffer[i] * 0.46875);
     u_anode_samples.push(voltage);
   }
 
