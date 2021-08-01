@@ -216,7 +216,7 @@ var acquire_u_anode = async function(serial_reader, serial_writer) {
 
   let u_anode_samples = []
   for(let i = 0; i < read_buffer.length; i++) {
-    let voltage = Math.round(read_buffer[i] * 0.46875);
+    let voltage = Math.round(read_buffer[i] * 4.6875)/10;
     u_anode_samples.push(voltage);
   }
 
@@ -230,12 +230,20 @@ var acquire_i_cathode = async function(serial_reader, serial_writer, u_grid) {
 
     let bytes_to_read = 128;
     read_buffer = await read_n_bytes_serial_pack_uint16(serial_reader, bytes_to_read, 15000);
+
+    var i_cathode_sample = []
+    for(let i = 0; i < read_buffer.length; i++) {
+      let current = Math.round(read_buffer[i] * 0.390625)/10;
+      i_cathode_sample.push(current);
+      console.log(i_cathode_sample)
+    }
+
   } catch(error) {
     alert(error)
     throw "Impossible d'obtenir les valeurs d'intensité cathode"
   }
 
-  return read_buffer;
+  return i_cathode_sample;
 }
 
 var read_n_bytes_serial_pack_uint16 = async function(serial_reader, n_bytes, timeout) {
