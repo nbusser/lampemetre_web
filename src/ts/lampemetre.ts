@@ -5,13 +5,13 @@ import Capture from './model/Capture';
 import TubeManager from './controler/TubesManager';
 import Color from './chart/Color';
 import Measure from './model/Measure';
-import { PlotMeasure } from './chart/PlotMeasure';
+import ViewMeasure from './chart/ViewMeasure';
 
 interface PlotHTMLElement extends HTMLElement {
   on(eventName: string, handler: Function): void;
 }
 
-const PLOT_MEASURES: PlotMeasure[] = [];
+const PLOT_MEASURES: ViewMeasure[] = [];
 
 const PLOT: PlotHTMLElement = <PlotHTMLElement>document.getElementById('chart');
 const PLOT_DATA = [];
@@ -31,36 +31,23 @@ Plotly.newPlot(PLOT, {
 PLOT.on('plotly_click', (data) => {
   const xClicked: Number = data.points[0].x;
   let found: boolean = false;
-  for (let i = 0; i < PLOT_MEASURES.length && !found; i++) {
-    const measure: PlotMeasure = PLOT_MEASURES[i];
+  for (let i = 0; i < PLOT_MEASURES.length && !found; i += 1) {
+    const measure: ViewMeasure = PLOT_MEASURES[i];
     if (measure.measure.uAnode === xClicked) {
+      measure.removeDiv();
       PLOT_MEASURES.splice(i, 1);
-      SHAPES.splice(SHAPES.indexOf(measure.shape), 1);
+      SHAPES.splice(SHAPES.indexOf(measure.getShape()), 1);
       found = true;
     }
   }
 
   if (!found) {
-    const verticalLine = {
-      type: 'line',
-      x0: xClicked,
-      y0: 0,
-      x1: xClicked,
-      yref: 'paper',
-      y1: 1,
-      line: {
-        color: 'grey',
-        width: 2,
-        dash: 'dot',
-      },
-    };
-
-    const measure: PlotMeasure = {
-      measure: new Measure(xClicked),
-      shape: verticalLine,
-    };
-    PLOT_MEASURES.push(measure);
-    SHAPES.push(verticalLine);
+    const plotMeasure: ViewMeasure = new ViewMeasure(
+      new Measure(xClicked),
+      new Color(0, 0, 255, 1.0),
+    );
+    PLOT_MEASURES.push(plotMeasure);
+    SHAPES.push(plotMeasure.getShape());
   }
   Plotly.redraw(PLOT);
 });
