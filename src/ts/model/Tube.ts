@@ -9,8 +9,8 @@ export default class Tube {
     this.name = name;
   }
 
-  createCapture(uGrille: number, values: number[]): Capture {
-    const createdCapture = new Capture(uGrille, values, this);
+  createCapture(uAnode: number[], uGrille: number, values: number[]): Capture {
+    const createdCapture = new Capture(uAnode, uGrille, values, this);
     this.captures.push(createdCapture);
     return createdCapture;
   }

@@ -24,8 +24,10 @@
   "homepage": "https://github.com/nbusser/lampemetre_web#readme",
   "dependencies": {
     "@parcel/config-default": "^2.0.0-alpha.3",
-    "chart.js": "^3.4.1",
-    "chartjs-plugin-annotation": "^1.0.2"
+    "chart.js": "^3.5.0",
+    "chartjs-plugin-annotation": "^1.0.2",
+    "plotly.js": "^2.3.1",
+    "plotly.js-dist-min": "^2.3.1"
   },
   "browserslist": [
     "last 3 and_chr versions",
