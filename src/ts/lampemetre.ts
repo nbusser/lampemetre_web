@@ -5,18 +5,41 @@ import Capture from './model/Capture';
 import TubeManager from './controler/TubesManager';
 import Color from './chart/Color';
 
-const CHART = 'chart';
-const PLOT_DATA = [];
+interface PlotHTMLElement extends HTMLElement {
+  on(eventName: string, handler: Function): void;
+}
 
-Plotly.newPlot(CHART, {
+const PLOT: PlotHTMLElement = <PlotHTMLElement>document.getElementById('chart');
+const PLOT_DATA = [];
+const SHAPES = [];
+
+Plotly.newPlot(PLOT, {
   data: PLOT_DATA,
   layout: {
     width: 600,
     height: 400,
+
+    shapes: SHAPES,
   },
 });
 
-Plotly.redraw(CHART);
+PLOT.on('plotly_click', (data) => {
+  const xClicked: Number = data.points[0].x;
+  SHAPES.push({
+    type: 'line',
+    x0: xClicked,
+    y0: 0,
+    x1: xClicked,
+    yref: 'paper',
+    y1: 1,
+    line: {
+      color: 'grey',
+      width: 1.5,
+      dash: 'dot',
+    },
+  });
+  Plotly.redraw(PLOT);
+});
 
 const colors: Color[] = [
   new Color(0, 0, 255, 1.0),
@@ -52,7 +75,7 @@ function captureToTrace(capture: Capture): Object {
 
 function addTraceToPlot(line: Object) {
   PLOT_DATA.push(line);
-  Plotly.redraw(CHART);
+  Plotly.redraw(PLOT);
 }
 
 const xValues: number[] = [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150];
