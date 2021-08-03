@@ -8,12 +8,11 @@ import TubeManager from './controler/TubesManager';
 import Color from './chart/Color';
 import Measure from './model/Measure';
 import ViewMeasure from './chart/ViewMeasure';
+import ViewMeasuresManager from './controler/ViewMeasuresManager';
 
 interface PlotHTMLElement extends HTMLElement {
   on(eventName: string, handler: Function): void;
 }
-
-const PLOT_MEASURES: ViewMeasure[] = [];
 
 const PLOT: PlotHTMLElement = <PlotHTMLElement>document.getElementById('chart');
 const PLOT_DATA: Data[] = [];
@@ -30,25 +29,18 @@ newPlot(PLOT, PLOT_DATA, LAYOUT);
 
 PLOT.on('plotly_click', (data: PlotMouseEvent) => {
   const xClicked: number = <number>data.points[0].x;
-  let found: boolean = false;
-  for (let i = 0; i < PLOT_MEASURES.length && !found; i += 1) {
-    const measure: ViewMeasure = PLOT_MEASURES[i];
-    if (measure.measure.uAnode === xClicked) {
-      measure.removeDiv();
-      PLOT_MEASURES.splice(i, 1);
-      SHAPES.splice(SHAPES.indexOf(measure.getShape()), 1);
-      found = true;
-    }
+
+  const viewMeasure: ViewMeasure | undefined = ViewMeasuresManager.getViewMeasure(xClicked);
+  if (viewMeasure === undefined) {
+    const newViewMeasure: ViewMeasure = ViewMeasuresManager.createViewMeasure(
+      new Measure(xClicked),
+    );
+    SHAPES.push(newViewMeasure.getShape());
+  } else {
+    ViewMeasuresManager.removeViewMeasure(viewMeasure);
+    SHAPES.splice(SHAPES.indexOf(viewMeasure.getShape()), 1);
   }
 
-  if (!found) {
-    const plotMeasure: ViewMeasure = new ViewMeasure(
-      new Measure(xClicked),
-      new Color(0, 0, 255, 1.0),
-    );
-    PLOT_MEASURES.push(plotMeasure);
-    SHAPES.push(plotMeasure.getShape());
-  }
   redraw(PLOT);
 });
 
