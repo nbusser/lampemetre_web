@@ -1,7 +1,7 @@
 export default class Measure {
-  public uAnode: Number;
+  public uAnode: number;
 
-  constructor(uAnode: Number) {
+  constructor(uAnode: number) {
     this.uAnode = uAnode;
   }
 }

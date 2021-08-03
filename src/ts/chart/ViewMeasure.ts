@@ -1,3 +1,4 @@
+import { Shape } from 'plotly.js';
 import Measure from '../model/Measure';
 import Color from './Color';
 
@@ -6,14 +7,17 @@ export default class ViewMeasure {
 
   public measure: Measure;
 
-  private shape: Object;
+  private color: Color;
+
+  private shape: Shape;
 
   private htmlElement: HTMLElement;
 
   constructor(measure: Measure, color: Color) {
     this.measure = measure;
+    this.color = color;
 
-    this.shape = {
+    this.shape = <Shape>{
       type: 'line',
       x0: measure.uAnode,
       y0: 0,
@@ -35,7 +39,11 @@ export default class ViewMeasure {
     ViewMeasure.measuresDiv.appendChild(this.htmlElement);
   }
 
-  getShape() {
+  getColor(): Color {
+    return this.color;
+  }
+
+  getShape(): Shape {
     return this.shape;
   }
 

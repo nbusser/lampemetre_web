@@ -1,4 +1,6 @@
-import Plotly from 'plotly.js-dist-min';
+import {
+  Shape, PlotData, PlotMouseEvent, newPlot, redraw, Data, Layout,
+} from 'plotly.js';
 
 import Tube from './model/Tube';
 import Capture from './model/Capture';
@@ -14,22 +16,20 @@ interface PlotHTMLElement extends HTMLElement {
 const PLOT_MEASURES: ViewMeasure[] = [];
 
 const PLOT: PlotHTMLElement = <PlotHTMLElement>document.getElementById('chart');
-const PLOT_DATA = [];
+const PLOT_DATA: Data[] = [];
 
-const SHAPES = [];
+const SHAPES: Shape[] = [];
 
-Plotly.newPlot(PLOT, {
-  data: PLOT_DATA,
-  layout: {
-    width: 600,
-    height: 400,
+const LAYOUT: Partial<Layout> = {
+  width: 600,
+  height: 400,
+  shapes: SHAPES,
+};
 
-    shapes: SHAPES,
-  },
-});
+newPlot(PLOT, PLOT_DATA, LAYOUT);
 
-PLOT.on('plotly_click', (data) => {
-  const xClicked: Number = data.points[0].x;
+PLOT.on('plotly_click', (data: PlotMouseEvent) => {
+  const xClicked: number = <number>data.points[0].x;
   let found: boolean = false;
   for (let i = 0; i < PLOT_MEASURES.length && !found; i += 1) {
     const measure: ViewMeasure = PLOT_MEASURES[i];
@@ -49,7 +49,7 @@ PLOT.on('plotly_click', (data) => {
     PLOT_MEASURES.push(plotMeasure);
     SHAPES.push(plotMeasure.getShape());
   }
-  Plotly.redraw(PLOT);
+  redraw(PLOT);
 });
 
 const colors: Color[] = [
@@ -69,10 +69,10 @@ function captureGetLabel(capture: Capture): string {
   return `${capture.uGrille}V`;
 }
 
-function captureToTrace(capture: Capture): Object {
+function captureToTrace(capture: Capture): PlotData {
   const tubeColor: string = getTubeColor(capture.tube).toString();
 
-  return {
+  return <PlotData>{
     x: capture.uAnode,
     y: capture.iCathode,
     mode: 'lines+markers',
@@ -84,9 +84,9 @@ function captureToTrace(capture: Capture): Object {
   };
 }
 
-function addTraceToPlot(line: Object) {
+function addTraceToPlot(line: PlotData) {
   PLOT_DATA.push(line);
-  Plotly.redraw(PLOT);
+  redraw(PLOT);
 }
 
 const xValues: number[] = [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150];

@@ -9,6 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "eslint './src/**/*.{ts,tsx}' && tsc --noEmit && parcel serve src/index.html",
+    "serve_no_check": "parcel serve src/index.html",
     "fmt": "eslint --fix './src/**/*.{ts,tsx}'"
   },
   "repository": {
@@ -24,21 +25,14 @@
   "homepage": "https://github.com/nbusser/lampemetre_web#readme",
   "dependencies": {
     "@parcel/config-default": "^2.0.0-alpha.3",
-    "@types/plotly.js": "^1.54.13",
-    "chart.js": "^3.5.0",
-    "chartjs-plugin-annotation": "^1.0.2",
-    "plotly.js": "^2.3.1",
-    "plotly.js-dist-min": "^2.3.1",
+    "plotly.js": "npm:plotly.js-dist@^2.3.1",
     "stack-typescript": "^1.0.4"
   },
   "browserslist": [
-    "last 3 and_chr versions",
-    "last 3 chrome versions",
-    "last 3 opera versions",
-    "last 3 ios_saf versions",
-    "last 3 safari versions"
+    "last 1 chrome versions"
   ],
   "devDependencies": {
+    "@types/plotly.js": "^1.54.13",
     "@typescript-eslint/eslint-plugin": "^4.28.4",
     "@typescript-eslint/parser": "^4.28.4",
     "eslint": "^7.31.0",
