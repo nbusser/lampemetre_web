@@ -34,6 +34,7 @@ export default class ViewMeasure {
     this.htmlElement = document.createElement('div');
     const title = document.createElement('p');
     title.textContent = `Mesure (${measure.uAnode}V)`;
+    title.style.color = this.color.toString();
     this.htmlElement.appendChild(title);
 
     ViewMeasure.measuresDiv.appendChild(this.htmlElement);
