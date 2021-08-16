@@ -1,7 +1,7 @@
 import Tube from './model/Tube';
 import Capture from './model/Capture';
 import TubeManager from './controler/TubesManager';
-import Plot from './controler/Plot';
+import Plot from './chart/Plot';
 
 const plot = Plot.getInstance();
 
