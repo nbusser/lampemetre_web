@@ -35,7 +35,6 @@ export default abstract class ViewTubesManager {
     ViewTubesManager.tubesList.splice(ViewTubesManager.tubesList.indexOf(viewTube), 1);
     viewTube.deleteTube();
     ViewTubesManager.tubeColors.push(viewTube.getColor());
-    // TODO: remove captures from plot
   }
 
   public static getViewTube(viewTube: ViewTube): ViewTube | undefined {

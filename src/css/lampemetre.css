@@ -6,19 +6,48 @@
     display: flex;
 }
 
+#ul_tubes {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.li_tube {
+    margin-right: 2%;
+    margin-bottom: 2%;
+    list-style: none;
+    border: 2px solid black;
+    border-radius: 2%;
+    padding: 2%;
+}
+
 .measure {
     font-size: 75%;
     margin: 1%;
 }
 
-.div_tube_header {
-    display: flex;
+.header_text {
+    margin: 0;
 }
 
-.div_listed_capture {
+.tube_capture_button_inline {
     display: flex;
+    align-items: baseline;
+}
+
+.tube_capture_header_div {
+    margin-bottom: 15%;
 }
 
 .div_new_capture {
     display:flex;
+}
+
+.btn_tube_capture {
+    margin-left: 5%;
+    align-self: center;
+}
+
+.capture_value {
+    font-size: 80%;
 }

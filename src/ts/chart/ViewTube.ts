@@ -12,7 +12,7 @@ export default class ViewTube {
 
   private color: Color;
 
-  private tubeDiv: HTMLElement;
+  private tubeLi: HTMLElement;
 
   private tubeCapturesList: HTMLUListElement;
 
@@ -21,70 +21,87 @@ export default class ViewTube {
 
     this.color = color;
 
-    this.tubeDiv = document.createElement('div');
+    this.tubeLi = document.createElement('li');
+    this.tubeLi.className = 'li_tube';
 
     const tubeHeaderDiv = document.createElement('div');
-    tubeHeaderDiv.className = 'div_tube_header';
-    this.tubeDiv.appendChild(tubeHeaderDiv);
+    tubeHeaderDiv.classList.add('tube_capture_header_div');
+    tubeHeaderDiv.classList.add('tube_capture_button_inline');
+    tubeHeaderDiv.classList.add('div_tube_header');
+    this.tubeLi.appendChild(tubeHeaderDiv);
 
-    const title = document.createElement('p');
+    const title = document.createElement('h4');
     title.textContent = tube.name;
     title.style.color = this.color.toString();
-    title.className = 'tube_name';
+    title.classList.add('tube_name');
+    title.classList.add('header_text');
     tubeHeaderDiv.appendChild(title);
 
     const removeTubeBtn = document.createElement('button');
-    removeTubeBtn.className = 'remove_tube_btn';
+    removeTubeBtn.classList.add('btn_tube_capture');
+    removeTubeBtn.classList.add('btn_tube');
+    removeTubeBtn.classList.add('btn_remove_tube');
     removeTubeBtn.textContent = '-';
     removeTubeBtn.addEventListener('click', () => removeTubeCallback(this));
     tubeHeaderDiv.appendChild(removeTubeBtn);
 
     const capturesDiv = document.createElement('div');
     capturesDiv.className = 'div_tube_captures';
-    this.tubeDiv.appendChild(capturesDiv);
-
-    this.tubeCapturesList = document.createElement('ul');
-    this.tubeCapturesList.className = 'capture_list';
-    capturesDiv.appendChild(this.tubeCapturesList);
+    this.tubeLi.appendChild(capturesDiv);
 
     const newCaptureDiv = document.createElement('div');
-    newCaptureDiv.className = 'div_new_capture';
+    newCaptureDiv.classList.add('tube_capture_header_div');
+    newCaptureDiv.classList.add('tube_capture_button_inline');
     capturesDiv.appendChild(newCaptureDiv);
 
-    const newCaptureText = document.createElement('p');
-    newCaptureText.textContent = 'Nouvelle capture:';
-    newCaptureDiv.appendChild(newCaptureText);
+    const catpuresHeader = document.createElement('h5');
+    catpuresHeader.textContent = 'Captures:';
+    catpuresHeader.classList.add('captures_list_header');
+    catpuresHeader.classList.add('header_text');
+    newCaptureDiv.appendChild(catpuresHeader);
 
     const addCaptureBtn = document.createElement('button');
     addCaptureBtn.textContent = '+';
-    addCaptureBtn.className = 'new_capture_btn';
+    addCaptureBtn.classList.add('btn_tube_capture');
+    addCaptureBtn.classList.add('btn_capture');
+    addCaptureBtn.classList.add('btn_new_capture');
     addCaptureBtn.addEventListener('click', () => {
       const capture = this.tube.createCapture([1, 2, 3], 1, [4, 5, 6]);
       this.addCapture(capture);
     });
     newCaptureDiv.appendChild(addCaptureBtn);
 
+    this.tubeCapturesList = document.createElement('ul');
+    this.tubeCapturesList.className = 'capture_list';
+    capturesDiv.appendChild(this.tubeCapturesList);
+
     this.tube.captures.forEach((capture) => {
       this.addCapture(capture);
     });
-    ViewTube.tubesUlHtml.appendChild(this.tubeDiv);
+    ViewTube.tubesUlHtml.appendChild(this.tubeLi);
   }
 
   private addCapture(capture: Capture) {
     Plot.getInstance().drawCapture(capture, this.color);
 
     const element: HTMLElement = document.createElement('li');
+    element.classList.add('li_capture');
     this.tubeCapturesList.appendChild(element);
 
     const divCapture: HTMLDivElement = document.createElement('div');
-    divCapture.className = 'div_listed_capture';
+    divCapture.classList.add('tube_capture_button_inline');
+    divCapture.classList.add('div_listed_capture');
     element.appendChild(divCapture);
 
-    const text: HTMLParagraphElement = document.createElement('p');
+    const text: HTMLElement = document.createElement('span');
     text.textContent = capture.toString();
+    text.className = 'capture_value';
     divCapture.appendChild(text);
 
     const deleteButton: HTMLButtonElement = document.createElement('button');
+    deleteButton.classList.add('btn_tube_capture');
+    deleteButton.classList.add('btn_capture');
+    deleteButton.classList.add('btn_remove_capture');
     deleteButton.textContent = '-';
     deleteButton.addEventListener('click', () => this.removeCapture(capture));
 
@@ -110,7 +127,7 @@ export default class ViewTube {
   }
 
   getHtml(): HTMLElement {
-    return this.tubeDiv;
+    return this.tubeLi;
   }
 
   getColor(): Color {
@@ -118,7 +135,7 @@ export default class ViewTube {
   }
 
   deleteTube() {
-    ViewTube.tubesUlHtml.removeChild(this.tubeDiv);
+    ViewTube.tubesUlHtml.removeChild(this.tubeLi);
     this.capturesMap.forEach((value, key) => {
       this.removeCapture(key);
     });
