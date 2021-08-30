@@ -117,7 +117,7 @@ export default class ViewTube {
     return this.color;
   }
 
-  removeDiv() {
+  deleteTube() {
     ViewTube.tubesUlHtml.removeChild(this.tubeDiv);
     this.capturesMap.forEach((value, key) => {
       this.removeCapture(key);
