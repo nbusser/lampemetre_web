@@ -5,8 +5,6 @@ import Color from './Color';
 import ViewMeasure from './ViewMeasure';
 import Capture from '../model/Capture';
 import Measure from '../model/Measure';
-import Tube from '../model/Tube';
-import TubeManager from '../controler/TubesManager';
 import ViewMeasuresManager from '../controler/ViewMeasuresManager';
 
 interface PlotHTMLElement extends HTMLElement {
@@ -16,24 +14,13 @@ interface PlotHTMLElement extends HTMLElement {
 export default class Plot {
   private static instance: Plot;
 
-  private static colors: Color[] = [
-    new Color(0, 0, 255, 1.0),
-    new Color(255, 0, 0, 1.0),
-    new Color(0, 255, 0, 1.0),
-    new Color(255, 255, 0, 1.0),
-    new Color(255, 0, 255, 1.0),
-  ];
-
-  private static getTubeColor(tube: Tube): Color {
-    const tubeIndex = TubeManager.getTubeIndex(tube);
-    return Plot.colors[tubeIndex % Plot.colors.length];
-  }
-
   private rootHtml: PlotHTMLElement = <PlotHTMLElement>document.getElementById('chart');
 
   private data: Data[] = [];
 
   private annotations: Shape[] = [];
+
+  private captureTraceMap: Map<Capture, PlotData> = new Map();
 
   private layout: Partial<Layout> = {
     width: 600,
@@ -78,20 +65,40 @@ export default class Plot {
     this.refresh();
   }
 
-  public drawCapture(capture: Capture) {
-    const tubeColor: string = Plot.getTubeColor(capture.tube).toString();
+  private removeTraceFromPlot(trace: PlotData) {
+    const index = this.data.indexOf(trace);
+    if (index === -1) {
+      throw Error('This trace is not part of the plot');
+    } else {
+      this.data.splice(index, 1);
+      this.refresh();
+    }
+  }
 
+  public drawCapture(capture: Capture, tubeColor: Color) {
     const trace: PlotData = <PlotData>{
       x: capture.uAnode,
       y: capture.iCathode,
       mode: 'lines+markers',
       type: 'scatter',
       marker: {
-        color: tubeColor,
+        color: tubeColor.toString(),
       },
       name: `${capture.uGrille}V`,
     };
 
+    this.captureTraceMap.set(capture, trace);
+
     this.addTraceToPlot(trace);
+  }
+
+  public removeCapture(capture: Capture) {
+    const trace = this.captureTraceMap.get(capture);
+    if (trace === undefined) {
+      throw Error(`Cannot remove capture ${capture.toString} from plot. This capture has never been added to the plot`);
+    } else {
+      this.captureTraceMap.delete(capture);
+      this.removeTraceFromPlot(trace);
+    }
   }
 }

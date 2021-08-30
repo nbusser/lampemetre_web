@@ -10,3 +10,15 @@
     font-size: 75%;
     margin: 1%;
 }
+
+.div_tube_header {
+    display: flex;
+}
+
+.div_listed_capture {
+    display: flex;
+}
+
+.div_new_capture {
+    display:flex;
+}

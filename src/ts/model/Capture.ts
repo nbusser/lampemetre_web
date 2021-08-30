@@ -5,16 +5,13 @@ export default class Capture {
 
   public iCathode: number[];
 
-  public tube: any;
-
-  constructor(uAnode: number[], uGrille: number, iCathode: number[], tube: any) {
+  constructor(uAnode: number[], uGrille: number, iCathode: number[]) {
     this.uAnode = uAnode;
     this.uGrille = uGrille;
     this.iCathode = iCathode;
+  }
 
-    if (tube.constructor.name !== 'Tube') {
-      throw TypeError(`Expected Tube, got ${tube.constructor.name}`);
-    }
-    this.tube = tube;
+  toString(): string {
+    return `${this.uGrille}V`;
   }
 }
