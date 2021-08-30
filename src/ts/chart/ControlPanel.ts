@@ -20,5 +20,9 @@ export default class ControlPanel {
         ViewTubesManager.createViewTube(name);
       }
     });
+
+    document.getElementById('btn_clear')?.addEventListener('click', () => {
+      ViewTubesManager.clearViewTubes();
+    });
   }
 }

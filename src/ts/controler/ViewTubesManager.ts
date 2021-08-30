@@ -46,7 +46,7 @@ export default abstract class ViewTubesManager {
     return ViewTubesManager.tubesList[index];
   }
 
-  public static clearViewMeasure() {
+  public static clearViewTubes() {
     while (ViewTubesManager.tubesList.length !== 0) {
       ViewTubesManager.removeViewTube(ViewTubesManager.tubesList[0]);
     }
