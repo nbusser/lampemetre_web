@@ -1,4 +1,5 @@
 import ViewTubesManager from '../controler/ViewTubesManager';
+import ViewMeasuresManager from '../controler/ViewMeasuresManager';
 import Plot from './Plot';
 
 export default class ControlPanel {
@@ -23,6 +24,11 @@ export default class ControlPanel {
 
     document.getElementById('btn_clear')?.addEventListener('click', () => {
       ViewTubesManager.clearViewTubes();
+    });
+
+    document.getElementById('btn_clear_measures')?.addEventListener('click', () => {
+      Plot.getInstance().clearMeasures();
+      ViewMeasuresManager.clearViewMeasure();
     });
   }
 }

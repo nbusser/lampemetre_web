@@ -49,7 +49,7 @@ export default class Plot {
         this.annotations.push(newViewMeasure.getShape());
       } else {
         ViewMeasuresManager.removeViewMeasure(viewMeasure);
-        this.annotations.splice(this.annotations.indexOf(viewMeasure.getShape()), 1);
+        this.removeMeasure(viewMeasure);
       }
 
       this.refresh();
@@ -100,5 +100,15 @@ export default class Plot {
       this.captureTraceMap.delete(capture);
       this.removeTraceFromPlot(trace);
     }
+  }
+
+  public removeMeasure(viewMeasure: ViewMeasure) {
+    this.annotations.splice(this.annotations.indexOf(viewMeasure.getShape()), 1);
+    this.refresh();
+  }
+
+  public clearMeasures() {
+    this.annotations.splice(0, this.annotations.length);
+    this.refresh();
   }
 }

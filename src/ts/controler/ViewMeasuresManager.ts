@@ -47,6 +47,8 @@ export default abstract class ViewMeasuresManager {
   }
 
   public static clearViewMeasure() {
-    ViewMeasuresManager.measuresMap.clear();
+    this.measuresMap.forEach((viewMeasure) => {
+      this.removeViewMeasure(viewMeasure);
+    });
   }
 }
