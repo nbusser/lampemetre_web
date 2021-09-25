@@ -65,10 +65,7 @@ export default class ViewTube {
     addCaptureBtn.classList.add('btn_tube_capture');
     addCaptureBtn.classList.add('btn_capture');
     addCaptureBtn.classList.add('btn_new_capture');
-    addCaptureBtn.addEventListener('click', () => {
-      const capture = this.tube.createCapture([1, 2, 3], 1, [4, 5, 6]);
-      this.addCapture(capture);
-    });
+    addCaptureBtn.addEventListener('click', () => this.createNewCapture());
     newCaptureDiv.appendChild(addCaptureBtn);
 
     this.tubeCapturesList = document.createElement('ul');
@@ -79,6 +76,19 @@ export default class ViewTube {
       this.addCapture(capture);
     });
     ViewTube.tubesUlHtml.appendChild(this.tubeLi);
+  }
+
+  private createNewCapture() {
+    const uGrid = prompt('Tension grille', '');
+    if (uGrid !== null && !Number.isNaN(parseInt(uGrid, 10))) {
+      const values: number[] = [];
+      for (let i = 0; i < 3; i += 1) {
+        values.push(Math.floor((Math.random() * 10) + 1));
+      }
+
+      const capture = this.tube.createCapture([1, 2, 3], parseInt(uGrid, 10), values);
+      this.addCapture(capture);
+    }
   }
 
   private addCapture(capture: Capture) {
