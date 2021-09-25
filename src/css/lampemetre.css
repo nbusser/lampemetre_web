@@ -35,10 +35,6 @@
     align-items: baseline;
 }
 
-.tube_capture_header_div {
-    margin-bottom: 15%;
-}
-
 .div_new_capture {
     display:flex;
 }
@@ -50,4 +46,9 @@
 
 .capture_value {
     font-size: 80%;
+}
+
+.div_select_mode {
+    display: flex;
+    margin-bottom: 15%;
 }

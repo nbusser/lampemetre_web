@@ -1,12 +1,16 @@
+import TubeMode from '../TubeMode';
 import Capture from './Capture';
 
 export default class Tube {
   public name: string;
 
+  public mode: TubeMode;
+
   public captures: Capture[] = [];
 
-  constructor(name: string) {
+  constructor(name: string, mode: TubeMode) {
     this.name = name;
+    this.mode = mode;
   }
 
   createCapture(uAnode: number[], uGrille: number, values: number[]): Capture {

@@ -2,8 +2,11 @@ import { Stack } from 'stack-typescript';
 import Color from '../chart/Color';
 import ViewTube from '../chart/ViewTube';
 import Tube from '../model/Tube';
+import TubeMode from '../TubeMode';
 
 export default abstract class ViewTubesManager {
+  public static defaultMode: TubeMode = TubeMode.Triode;
+
   private static tubesList: Array<ViewTube> = [];
 
   private static tubeColors: Stack<Color> = new Stack<Color>(
@@ -17,7 +20,7 @@ export default abstract class ViewTubesManager {
   private static defaultColor: Color = new Color(0, 0, 0, 1.0);
 
   public static createViewTube(name: string): ViewTube {
-    const tube = new Tube(name);
+    const tube = new Tube(name, ViewTubesManager.defaultMode);
 
     let color: Color = ViewTubesManager.tubeColors.pop();
     if (color === undefined) {
