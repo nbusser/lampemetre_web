@@ -46,7 +46,7 @@ export default class ViewTubesManager {
     this.tubesManager.OnRemoveTube.on(removeTubeHandler);
   }
 
-  public createViewTube(tube: Tube): ViewTube {
+  private createViewTube(tube: Tube) {
     let color: Color = this.tubeColors.pop();
     if (color === undefined) {
       color = this.defaultColor;
@@ -57,19 +57,19 @@ export default class ViewTubesManager {
     this.tubesList.set(tube, createdViewTube);
 
     this.onCreateViewTube.trigger(this, createdViewTube);
-
-    return createdViewTube;
   }
 
-  public getViewTube(tube: Tube): ViewTube | undefined {
-    return this.tubesList.get(tube);
-  }
-
-  public removeViewTube(tube: Tube) {
+  private removeViewTube(tube: Tube) {
     const viewTube: ViewTube = <ViewTube> this.tubesList.get(tube);
     this.tubesList.delete(viewTube.tube);
     this.tubeColors.push(viewTube.getColor());
 
-    viewTube.deleteTube();
+    viewTube.deleteViewTube();
+
+    this.onRemoveViewTube.trigger(this, viewTube);
+  }
+
+  public getViewTube(tube: Tube): ViewTube | undefined {
+    return this.tubesList.get(tube);
   }
 }
