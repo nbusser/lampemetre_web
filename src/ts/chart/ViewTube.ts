@@ -80,7 +80,7 @@ export default class ViewTube {
     selectMode.addEventListener('change', () => {
       const newMode = TubeMode[selectMode.selectedOptions[0].value as keyof typeof TubeMode];
       if (newMode !== undefined) {
-        this.tube.mode = newMode;
+        this.tube.changeMode(newMode);
       }
     });
     modeDiv.appendChild(selectMode);
