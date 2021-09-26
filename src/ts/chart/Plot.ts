@@ -4,7 +4,6 @@ import {
 import Color from './Color';
 import ViewMeasure from './ViewMeasure';
 import Capture from '../model/Capture';
-import Measure from '../model/Measure';
 import ViewMeasuresManager from '../controler/ViewMeasuresManager';
 import ViewTubesManager from '../controler/ViewTubesManager';
 import ViewTube from './ViewTube';
@@ -69,8 +68,7 @@ export default class Plot {
     this.rootHtml.on('plotly_click', (data: PlotMouseEvent) => {
       const xClicked: number = <number>data.points[0].x;
 
-      const measure: Measure | undefined = measureManager.getMeasure(xClicked);
-      if (measure === undefined) {
+      if (!measureManager.measureExists(xClicked)) {
         measureManager.createMeasure(xClicked);
       } else {
         measureManager.removeMeasure(xClicked);

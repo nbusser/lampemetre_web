@@ -1,7 +1,6 @@
 import { Stack } from 'stack-typescript';
 import Color from '../chart/Color';
 import ViewMeasure from '../chart/ViewMeasure';
-import Measure from '../model/Measure';
 import Signal from '../Signal';
 import MeasuresManager from './MeasuresManager';
 import TubesManager from './TubesManager';
@@ -11,7 +10,7 @@ export default class ViewMeasuresManager {
 
   private tubesManager: TubesManager;
 
-  private measuresMap: Map<Measure, ViewMeasure> = new Map();
+  private measuresMap: Map<number, ViewMeasure> = new Map();
 
   private colors: Stack<Color> = new Stack<Color>(
     new Color(0, 0, 255, 1.0),
@@ -38,20 +37,20 @@ export default class ViewMeasuresManager {
   constructor(measuresManager: MeasuresManager, tubesManager: TubesManager) {
     this.tubesManager = tubesManager;
 
-    const onCreateMeasureHandler = (_: MeasuresManager, measure: Measure) => {
-      this.createViewMeasure(measure);
+    const onCreateMeasureHandler = (_: MeasuresManager, uAnodeMeasure: number) => {
+      this.createViewMeasure(uAnodeMeasure);
     };
     measuresManager.OnCreateMeasure.on(onCreateMeasureHandler);
 
-    const onRemoveMeasureHandler = (_: MeasuresManager, measure: Measure) => {
-      this.removeViewMeasure(measure);
+    const onRemoveMeasureHandler = (_: MeasuresManager, uAnodeMeasure: number) => {
+      this.removeViewMeasure(uAnodeMeasure);
     };
     measuresManager.OnRemoveMeasure.on(onRemoveMeasureHandler);
   }
 
-  private createViewMeasure(measure: Measure) {
-    if (this.measuresMap.get(measure) !== undefined) {
-      throw Error(`There is already a ViewMeasure for ${measure.uAnode} measure`);
+  private createViewMeasure(uAnodeMeasure: number) {
+    if (this.measuresMap.get(uAnodeMeasure) !== undefined) {
+      throw Error(`There is already a ViewMeasure for ${uAnodeMeasure}V measure`);
     }
 
     let color: Color = this.colors.pop();
@@ -60,15 +59,15 @@ export default class ViewMeasuresManager {
     }
 
     const createdViewMeasure = new ViewMeasure(
-      measure, color, this.allMeasuresDiv, this.tubesManager,
+      uAnodeMeasure, color, this.allMeasuresDiv, this.tubesManager,
     );
-    this.measuresMap.set(measure, createdViewMeasure);
+    this.measuresMap.set(uAnodeMeasure, createdViewMeasure);
 
     this.onCreateViewMeasure.trigger(this, createdViewMeasure);
   }
 
-  private removeViewMeasure(measure: Measure) {
-    const viewMeasure: ViewMeasure = <ViewMeasure> this.measuresMap.get(measure);
+  private removeViewMeasure(uAnodeMeasure: number) {
+    const viewMeasure: ViewMeasure = <ViewMeasure> this.measuresMap.get(uAnodeMeasure);
 
     this.colors.push(viewMeasure.getColor());
 
@@ -77,7 +76,7 @@ export default class ViewMeasuresManager {
     this.onRemoveViewMeasure.trigger(this, viewMeasure);
   }
 
-  public getViewMeasure(measure: Measure): ViewMeasure | undefined {
-    return this.measuresMap.get(measure);
+  public getViewMeasure(uAnodeMeasure: number): ViewMeasure | undefined {
+    return this.measuresMap.get(uAnodeMeasure);
   }
 }

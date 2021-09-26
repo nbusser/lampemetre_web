@@ -1,6 +1,5 @@
 import { Shape } from 'plotly.js';
 import TubesManager from '../controler/TubesManager';
-import Measure from '../model/Measure';
 import Tube from '../model/Tube';
 import Color from './Color';
 import ViewTubeMeasure from './ViewTubeMeasure';
@@ -8,7 +7,7 @@ import ViewTubeMeasure from './ViewTubeMeasure';
 export default class ViewMeasure {
   private allMeasuresHtml: HTMLElement;
 
-  public measure: Measure;
+  public uAnodeMeasure: number;
 
   private color: Color;
 
@@ -19,17 +18,17 @@ export default class ViewMeasure {
   private viewTubeMeasures: Map<Tube, ViewTubeMeasure> = new Map();
 
   constructor(
-    measure: Measure, color: Color, allMeasuresHtml: HTMLElement, tubesManager: TubesManager,
+    uAnodeMeasure: number, color: Color, allMeasuresHtml: HTMLElement, tubesManager: TubesManager,
   ) {
-    this.measure = measure;
+    this.uAnodeMeasure = uAnodeMeasure;
     this.color = color;
     this.allMeasuresHtml = allMeasuresHtml;
 
     this.shape = <Shape>{
       type: 'line',
-      x0: measure.uAnode,
+      x0: uAnodeMeasure,
       y0: 0,
-      x1: measure.uAnode,
+      x1: uAnodeMeasure,
       yref: 'paper',
       y1: 1,
       line: {
@@ -41,7 +40,7 @@ export default class ViewMeasure {
 
     this.htmlElement = document.createElement('div');
     const title = document.createElement('p');
-    title.textContent = `Mesure (${measure.uAnode}V)`;
+    title.textContent = `Mesure (${uAnodeMeasure}V)`;
     title.style.color = this.color.toString();
     this.htmlElement.appendChild(title);
 
@@ -58,7 +57,7 @@ export default class ViewMeasure {
     tubesManager.OnRemoveTube.on(tubeMeasureRemoveHandler);
 
     tubesManager.getTubes().forEach((tube: Tube) => {
-      const newViewTubeMeasure = new ViewTubeMeasure(this.measure.uAnode, tube, this.htmlElement);
+      const newViewTubeMeasure = new ViewTubeMeasure(this.uAnodeMeasure, tube, this.htmlElement);
       this.viewTubeMeasures.set(tube, newViewTubeMeasure);
     });
   }
@@ -77,7 +76,7 @@ export default class ViewMeasure {
 
   private createViewTubeMeasure(tube: Tube) {
     const newViewTubeMeasure = new ViewTubeMeasure(
-      this.measure.uAnode, tube, this.htmlElement,
+      this.uAnodeMeasure, tube, this.htmlElement,
     );
     this.viewTubeMeasures.set(tube, newViewTubeMeasure);
   }

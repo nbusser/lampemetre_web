@@ -7,7 +7,7 @@ import ViewTubesManager from './controler/ViewTubesManager';
 import TubeMode from './TubeMode';
 
 const tubesManager: TubesManager = new TubesManager();
-const measureManager: MeasuresManager = new MeasuresManager(tubesManager);
+const measureManager: MeasuresManager = new MeasuresManager();
 
 const viewTubesManager = new ViewTubesManager(tubesManager);
 const viewMeasureManager = new ViewMeasuresManager(measureManager, tubesManager);
