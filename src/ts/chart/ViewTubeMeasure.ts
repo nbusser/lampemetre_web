@@ -17,14 +17,27 @@ export default class ViewTubeMeasure {
 
   private measureHtml: HTMLElement;
 
-  private tubeMeasureHtml: HTMLElement;
+  private tubeMeasureHtml: HTMLElement = document.createElement('div');
+
+  private measureResultErrorHtml: HTMLElement = document.createElement('p');
+
+  private measureResultsHtml: HTMLUListElement = document.createElement('ul');
+
+  private internalTrHtml: HTMLLIElement = document.createElement('li');
+
+  private slopeIHtml: HTMLLIElement = document.createElement('li');
+
+  private coefIHtml: HTMLLIElement = document.createElement('li');
+
+  private iRefy: HTMLLIElement = document.createElement('li');
+
+  private uRefx: HTMLLIElement = document.createElement('li');
 
   constructor(uAnode: number, tube: Tube, measureHtml: HTMLElement) {
     this.uAnode = uAnode;
     this.tube = tube;
     this.measureHtml = measureHtml;
 
-    this.tubeMeasureHtml = document.createElement('div');
     this.tubeMeasureHtml.classList.add('tube_measure_div');
 
     const tubeMeasureDivTitle = document.createElement('p');
@@ -32,6 +45,12 @@ export default class ViewTubeMeasure {
     this.tubeMeasureHtml.appendChild(tubeMeasureDivTitle);
 
     this.measureHtml.appendChild(this.tubeMeasureHtml);
+
+    this.measureResultsHtml.appendChild(this.internalTrHtml);
+    this.measureResultsHtml.appendChild(this.slopeIHtml);
+    this.measureResultsHtml.appendChild(this.coefIHtml);
+    this.measureResultsHtml.appendChild(this.iRefy);
+    this.measureResultsHtml.appendChild(this.uRefx);
 
     this.tube.OnCreateCapture.on((tube: Tube, capture: Capture) => this.updateDom());
     this.tube.OnRemoveCapture.on((tube: Tube, capture: Capture) => this.updateDom());
@@ -46,7 +65,27 @@ export default class ViewTubeMeasure {
 
   public updateDom() {
     const result = this.performMeasure();
-    console.log(result);
+
+    if (typeof result === 'string') {
+      this.measureResultErrorHtml.textContent = '/';
+      this.measureResultErrorHtml.title = result;
+
+      if (this.tubeMeasureHtml.contains(this.measureResultsHtml)) {
+        this.tubeMeasureHtml.removeChild(this.measureResultsHtml);
+      }
+      this.tubeMeasureHtml.appendChild(this.measureResultErrorHtml);
+    } else {
+      this.internalTrHtml.textContent = `Internal TR: ${result.internalTR} Ohm`;
+      this.slopeIHtml.textContent = `Pente I: ${result.slopeI} mA`;
+      this.coefIHtml.textContent = `Coef I: ${result.coefI} mA`;
+      this.iRefy.textContent = `I ref y: ${result.iRefy} mA`;
+      this.uRefx.textContent = `U ref x: ${result.uRefx} mA`;
+
+      if (this.tubeMeasureHtml.contains(this.measureResultErrorHtml)) {
+        this.tubeMeasureHtml.removeChild(this.measureResultErrorHtml);
+      }
+      this.tubeMeasureHtml.appendChild(this.measureResultsHtml);
+    }
   }
 
   private performMeasure(): MeasureResult | string {
