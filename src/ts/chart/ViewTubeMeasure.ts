@@ -26,6 +26,7 @@ export default class ViewTubeMeasure {
   }
 
   public updateDom() {
-    console.log('Todo');
+    const result = this.tubeMeasure.performMeasure();
+    console.log(result);
   }
 }
