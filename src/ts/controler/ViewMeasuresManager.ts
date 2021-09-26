@@ -6,6 +6,8 @@ import Signal from '../Signal';
 import MeasuresManager from './MeasuresManager';
 
 export default class ViewMeasuresManager {
+  private allMeasuresDiv: HTMLDivElement = <HTMLDivElement>document.getElementById('measures');
+
   private measuresMap: Map<Measure, ViewMeasure> = new Map();
 
   private colors: Stack<Color> = new Stack<Color>(
@@ -52,7 +54,7 @@ export default class ViewMeasuresManager {
       color = this.defaultColor;
     }
 
-    const createdViewMeasure = new ViewMeasure(measure, color);
+    const createdViewMeasure = new ViewMeasure(measure, color, this.allMeasuresDiv);
     this.measuresMap.set(measure, createdViewMeasure);
 
     this.onCreateViewMeasure.trigger(this, createdViewMeasure);
