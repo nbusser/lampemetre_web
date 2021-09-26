@@ -1,13 +1,13 @@
-import ViewMeasuresManager from '../controler/ViewMeasuresManager';
 import Plot from './Plot';
 import TubesManager from '../controler/TubesManager';
 import TubeMode from '../TubeMode';
+import MeasuresManager from '../controler/MeasuresManager';
 
 export default class ControlPanel {
   constructor(
     plot: Plot,
     tubesManager: TubesManager,
-    viewMeasuresManager: ViewMeasuresManager,
+    measuresManager: MeasuresManager,
   ) {
     document.getElementById('btn_add_tube')?.addEventListener('click', () => {
       const name = prompt('Nom du tube', '');
@@ -21,8 +21,7 @@ export default class ControlPanel {
     });
 
     document.getElementById('btn_clear_measures')?.addEventListener('click', () => {
-      plot.clearMeasures();
-      viewMeasuresManager.clearViewMeasure();
+      measuresManager.clearMeasures();
     });
   }
 }

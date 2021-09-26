@@ -2,9 +2,11 @@ import { Stack } from 'stack-typescript';
 import Color from '../chart/Color';
 import ViewMeasure from '../chart/ViewMeasure';
 import Measure from '../model/Measure';
+import Signal from '../Signal';
+import MeasuresManager from './MeasuresManager';
 
 export default class ViewMeasuresManager {
-  private measuresMap: Map<number, ViewMeasure> = new Map();
+  private measuresMap: Map<Measure, ViewMeasure> = new Map();
 
   private colors: Stack<Color> = new Stack<Color>(
     new Color(0, 0, 255, 1.0),
@@ -16,9 +18,33 @@ export default class ViewMeasuresManager {
 
   private defaultColor: Color = new Color(0, 0, 0, 1.0);
 
-  public createViewMeasure(measure: Measure): ViewMeasure {
-    if (this.measuresMap.get(measure.uAnode) !== undefined) {
-      throw Error(`There is already a ViewMeasure for ${measure.uAnode}`);
+  private readonly onCreateViewMeasure = new Signal<ViewMeasuresManager, ViewMeasure>();
+
+  private readonly onRemoveViewMeasure = new Signal<ViewMeasuresManager, ViewMeasure>();
+
+  public get OnCreateViewMeasure(): Signal<ViewMeasuresManager, ViewMeasure> {
+    return this.onCreateViewMeasure;
+  }
+
+  public get OnRemoveViewMeasure(): Signal<ViewMeasuresManager, ViewMeasure> {
+    return this.onRemoveViewMeasure;
+  }
+
+  constructor(measuresManager: MeasuresManager) {
+    const onCreateMeasureHandler = (_: MeasuresManager, measure: Measure) => {
+      this.createViewMeasure(measure);
+    };
+    measuresManager.OnCreateMeasure.on(onCreateMeasureHandler);
+
+    const onRemoveMeasureHandler = (_: MeasuresManager, measure: Measure) => {
+      this.removeViewMeasure(measure);
+    };
+    measuresManager.OnRemoveMeasure.on(onRemoveMeasureHandler);
+  }
+
+  private createViewMeasure(measure: Measure) {
+    if (this.measuresMap.get(measure) !== undefined) {
+      throw Error(`There is already a ViewMeasure for ${measure.uAnode} measure`);
     }
 
     let color: Color = this.colors.pop();
@@ -27,28 +53,22 @@ export default class ViewMeasuresManager {
     }
 
     const createdViewMeasure = new ViewMeasure(measure, color);
-    this.measuresMap.set(measure.uAnode, createdViewMeasure);
+    this.measuresMap.set(measure, createdViewMeasure);
 
-    return createdViewMeasure;
+    this.onCreateViewMeasure.trigger(this, createdViewMeasure);
   }
 
-  public removeViewMeasure(viewMeasure: ViewMeasure) {
-    const { uAnode } = viewMeasure.measure;
-    if (!this.measuresMap.delete(uAnode)) {
-      throw Error(`There is not ViewMeasure for ${uAnode}`);
-    }
+  private removeViewMeasure(measure: Measure) {
+    const viewMeasure: ViewMeasure = <ViewMeasure> this.measuresMap.get(measure);
+
+    this.colors.push(viewMeasure.getColor());
 
     viewMeasure.removeDiv();
-    this.colors.push(viewMeasure.getColor());
+
+    this.onRemoveViewMeasure.trigger(this, viewMeasure);
   }
 
-  public getViewMeasure(uAnode: number): ViewMeasure | undefined {
-    return this.measuresMap.get(uAnode);
-  }
-
-  public clearViewMeasure() {
-    this.measuresMap.forEach((viewMeasure) => {
-      this.removeViewMeasure(viewMeasure);
-    });
+  public getViewMeasure(measure: Measure): ViewMeasure | undefined {
+    return this.measuresMap.get(measure);
   }
 }

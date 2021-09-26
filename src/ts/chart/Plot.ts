@@ -9,7 +9,7 @@ import ViewMeasuresManager from '../controler/ViewMeasuresManager';
 import ViewTubesManager from '../controler/ViewTubesManager';
 import ViewTube from './ViewTube';
 import Tube from '../model/Tube';
-import TubesManager from '../controler/TubesManager';
+import MeasuresManager from '../controler/MeasuresManager';
 
 interface PlotHTMLElement extends HTMLElement {
   on(eventName: string, handler: Function): void;
@@ -32,7 +32,8 @@ export default class Plot {
 
   constructor(rootHtml: HTMLElement,
     viewTubesManager: ViewTubesManager,
-    viewMeasureManager: ViewMeasuresManager) {
+    viewMeasuresManager: ViewMeasuresManager,
+    measureManager: MeasuresManager) {
     const createViewTubeHandler = (v: ViewTubesManager, viewTube: ViewTube) => {
       viewTube.tube.OnCreateCapture.on(
         (t: Tube, capture: Capture) => {
@@ -47,6 +48,20 @@ export default class Plot {
     };
     viewTubesManager.OnCreateViewTube.on(createViewTubeHandler);
 
+    const createViewMeasureHandler = (
+      v: ViewMeasuresManager, viewMeasure: ViewMeasure,
+    ) => {
+      this.addViewMeasure(viewMeasure);
+    };
+    viewMeasuresManager.OnCreateViewMeasure.on(createViewMeasureHandler);
+
+    const removeViewMeasureHandler = (
+      v: ViewMeasuresManager, viewMeasure: ViewMeasure,
+    ) => {
+      this.removeViewMeasure(viewMeasure);
+    };
+    viewMeasuresManager.OnRemoveViewMeasure.on(removeViewMeasureHandler);
+
     this.rootHtml = <PlotHTMLElement>rootHtml;
 
     newPlot(this.rootHtml, this.data, this.layout);
@@ -54,17 +69,12 @@ export default class Plot {
     this.rootHtml.on('plotly_click', (data: PlotMouseEvent) => {
       const xClicked: number = <number>data.points[0].x;
 
-      const viewMeasure: ViewMeasure | undefined = viewMeasureManager.getViewMeasure(xClicked);
-      if (viewMeasure === undefined) {
-        const newViewMeasure: ViewMeasure = viewMeasureManager.createViewMeasure(
-          new Measure(xClicked),
-        );
-        this.annotations.push(newViewMeasure.getShape());
+      const measure: Measure | undefined = measureManager.getMeasure(xClicked);
+      if (measure === undefined) {
+        measureManager.createMeasure(xClicked);
       } else {
-        viewMeasureManager.removeViewMeasure(viewMeasure);
-        this.removeMeasure(viewMeasure);
+        measureManager.removeMeasure(xClicked);
       }
-
       this.refresh();
     });
   }
@@ -115,7 +125,12 @@ export default class Plot {
     }
   }
 
-  public removeMeasure(viewMeasure: ViewMeasure) {
+  public addViewMeasure(viewMeasure: ViewMeasure) {
+    this.annotations.push(viewMeasure.getShape());
+    this.refresh();
+  }
+
+  public removeViewMeasure(viewMeasure: ViewMeasure) {
     this.annotations.splice(this.annotations.indexOf(viewMeasure.getShape()), 1);
     this.refresh();
   }
