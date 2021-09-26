@@ -6,15 +6,16 @@ import ViewMeasure from './ViewMeasure';
 import Capture from '../model/Capture';
 import Measure from '../model/Measure';
 import ViewMeasuresManager from '../controler/ViewMeasuresManager';
+import ViewTubesManager from '../controler/ViewTubesManager';
+import ViewTube from './ViewTube';
+import Tube from '../model/Tube';
 
 interface PlotHTMLElement extends HTMLElement {
   on(eventName: string, handler: Function): void;
 }
 
 export default class Plot {
-  private static instance: Plot;
-
-  private rootHtml: PlotHTMLElement = <PlotHTMLElement>document.getElementById('chart');
+  private rootHtml: PlotHTMLElement;
 
   private data: Data[] = [];
 
@@ -28,27 +29,38 @@ export default class Plot {
     shapes: this.annotations,
   };
 
-  public static getInstance(): Plot {
-    if (!Plot.instance) {
-      Plot.instance = new Plot();
-    }
-    return Plot.instance;
-  }
+  constructor(rootHtml: HTMLElement,
+    viewTubesManager: ViewTubesManager,
+    viewMeasureManager: ViewMeasuresManager) {
+    const createViewTubeHandler = (v: ViewTubesManager, viewTube: ViewTube) => {
+      viewTube.tube.OnCreateCapture.on(
+        (t: Tube, capture: Capture) => {
+          this.drawCapture(capture, viewTube.getColor());
+        },
+      );
+      viewTube.tube.OnRemoveCapture.on(
+        (t: Tube, capture: Capture) => {
+          this.removeCapture(capture);
+        },
+      );
+    };
+    viewTubesManager.OnCreateViewTube.on(createViewTubeHandler);
 
-  private constructor() {
+    this.rootHtml = <PlotHTMLElement>rootHtml;
+
     newPlot(this.rootHtml, this.data, this.layout);
 
     this.rootHtml.on('plotly_click', (data: PlotMouseEvent) => {
       const xClicked: number = <number>data.points[0].x;
 
-      const viewMeasure: ViewMeasure | undefined = ViewMeasuresManager.getViewMeasure(xClicked);
+      const viewMeasure: ViewMeasure | undefined = viewMeasureManager.getViewMeasure(xClicked);
       if (viewMeasure === undefined) {
-        const newViewMeasure: ViewMeasure = ViewMeasuresManager.createViewMeasure(
+        const newViewMeasure: ViewMeasure = viewMeasureManager.createViewMeasure(
           new Measure(xClicked),
         );
         this.annotations.push(newViewMeasure.getShape());
       } else {
-        ViewMeasuresManager.removeViewMeasure(viewMeasure);
+        viewMeasureManager.removeViewMeasure(viewMeasure);
         this.removeMeasure(viewMeasure);
       }
 

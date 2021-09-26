@@ -1,3 +1,4 @@
+import Signal from '../Signal';
 import TubeMode from '../TubeMode';
 import Capture from './Capture';
 
@@ -8,15 +9,27 @@ export default class Tube {
 
   public captures: Capture[] = [];
 
+  private readonly onCreateCapture = new Signal<Tube, Capture>();
+
+  private readonly onRemoveCapture = new Signal<Tube, Capture>();
+
+  public get OnCreateCapture(): Signal<Tube, Capture> {
+    return this.onCreateCapture;
+  }
+
+  public get OnRemoveCapture(): Signal<Tube, Capture> {
+    return this.onRemoveCapture;
+  }
+
   constructor(name: string, mode: TubeMode) {
     this.name = name;
     this.mode = mode;
   }
 
-  createCapture(uAnode: number[], uGrille: number, values: number[]): Capture {
+  createCapture(uAnode: number[], uGrille: number, values: number[]) {
     const createdCapture = new Capture(uAnode, uGrille, values);
     this.captures.push(createdCapture);
-    return createdCapture;
+    this.onCreateCapture.trigger(this, createdCapture);
   }
 
   deleteCapture(capture: Capture) {
@@ -26,5 +39,6 @@ export default class Tube {
     } else {
       this.captures.splice(index, 1);
     }
+    this.onRemoveCapture.trigger(this, capture);
   }
 }

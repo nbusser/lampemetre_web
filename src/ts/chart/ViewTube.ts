@@ -1,8 +1,8 @@
 import Capture from '../model/Capture';
 import Tube from '../model/Tube';
+import Signal from '../Signal';
 import TubeMode from '../TubeMode';
 import Color from './Color';
-import Plot from './Plot';
 
 export default class ViewTube {
   private static tubesUlHtml: HTMLUListElement = <HTMLUListElement>document.getElementById('ul_tubes');
@@ -17,8 +17,24 @@ export default class ViewTube {
 
   private tubeCapturesList: HTMLUListElement;
 
-  constructor(tube: Tube, color: Color, removeTubeCallback: Function) {
+  private readonly onRemoveViewTube = new Signal<ViewTube, undefined>();
+
+  public get OnRemoveViewTube(): Signal<ViewTube, undefined> {
+    return this.onRemoveViewTube;
+  }
+
+  constructor(tube: Tube, color: Color) {
     this.tube = tube;
+
+    const tubeCreateCaptureHandler = (t: Tube, capture: Capture) => {
+      this.addCapture(capture);
+    };
+    this.tube.OnCreateCapture.on(tubeCreateCaptureHandler);
+
+    const tubeRemoveCaptureHandler = (t: Tube, capture: Capture) => {
+      this.removeCapture(capture);
+    };
+    this.tube.OnRemoveCapture.on(tubeRemoveCaptureHandler);
 
     this.color = color;
 
@@ -43,7 +59,10 @@ export default class ViewTube {
     removeTubeBtn.classList.add('btn_tube');
     removeTubeBtn.classList.add('btn_remove_tube');
     removeTubeBtn.textContent = '-';
-    removeTubeBtn.addEventListener('click', () => removeTubeCallback(this));
+    removeTubeBtn.addEventListener('click', () => {
+      this.deleteTube();
+      this.onRemoveViewTube.trigger(this, undefined);
+    });
     tubeHeaderDiv.appendChild(removeTubeBtn);
 
     const modeDiv = document.createElement('div');
@@ -108,14 +127,11 @@ export default class ViewTube {
         values.push(Math.floor((Math.random() * 10) + 1));
       }
 
-      const capture = this.tube.createCapture([1, 2, 3], parseInt(uGrid, 10), values);
-      this.addCapture(capture);
+      this.tube.createCapture([1, 2, 3], parseInt(uGrid, 10), values);
     }
   }
 
   private addCapture(capture: Capture) {
-    Plot.getInstance().drawCapture(capture, this.color);
-
     const element: HTMLElement = document.createElement('li');
     element.classList.add('li_capture');
     this.tubeCapturesList.appendChild(element);
@@ -135,7 +151,7 @@ export default class ViewTube {
     deleteButton.classList.add('btn_capture');
     deleteButton.classList.add('btn_remove_capture');
     deleteButton.textContent = '-';
-    deleteButton.addEventListener('click', () => this.removeCapture(capture));
+    deleteButton.addEventListener('click', () => this.tube.deleteCapture(capture));
 
     divCapture.appendChild(deleteButton);
 
@@ -143,8 +159,6 @@ export default class ViewTube {
   }
 
   private removeCapture(capture: Capture) {
-    Plot.getInstance().removeCapture(capture);
-
     const captureHtml = this.capturesMap.get(capture);
 
     if (captureHtml === undefined) {
@@ -154,8 +168,6 @@ export default class ViewTube {
     this.tubeCapturesList.removeChild(captureHtml);
 
     this.capturesMap.delete(capture);
-
-    this.tube.deleteCapture(capture);
   }
 
   getHtml(): HTMLElement {
@@ -169,7 +181,8 @@ export default class ViewTube {
   deleteTube() {
     ViewTube.tubesUlHtml.removeChild(this.tubeLi);
     this.capturesMap.forEach((value, key) => {
-      this.removeCapture(key);
+      this.tube.deleteCapture(key);
+      // this.removeCapture(key);
     });
   }
 }
