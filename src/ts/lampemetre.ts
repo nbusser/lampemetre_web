@@ -10,7 +10,7 @@ const tubesManager: TubesManager = new TubesManager();
 const measureManager: MeasuresManager = new MeasuresManager(tubesManager);
 
 const viewTubesManager = new ViewTubesManager(tubesManager);
-const viewMeasureManager = new ViewMeasuresManager(measureManager);
+const viewMeasureManager = new ViewMeasuresManager(measureManager, tubesManager);
 
 const rootHtml: HTMLElement = <HTMLElement>document.getElementById('chart');
 const plot = new Plot(rootHtml, viewTubesManager, viewMeasureManager, measureManager);

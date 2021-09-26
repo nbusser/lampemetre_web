@@ -1,7 +1,7 @@
 import { Shape } from 'plotly.js';
+import TubesManager from '../controler/TubesManager';
 import Measure from '../model/Measure';
 import Tube from '../model/Tube';
-import TubeMeasure from '../model/TubeMeasure';
 import Color from './Color';
 import ViewTubeMeasure from './ViewTubeMeasure';
 
@@ -16,9 +16,11 @@ export default class ViewMeasure {
 
   private htmlElement: HTMLElement;
 
-  private viewTubeMeasures: Map<TubeMeasure, ViewTubeMeasure> = new Map();
+  private viewTubeMeasures: Map<Tube, ViewTubeMeasure> = new Map();
 
-  constructor(measure: Measure, color: Color, allMeasuresHtml: HTMLElement) {
+  constructor(
+    measure: Measure, color: Color, allMeasuresHtml: HTMLElement, tubesManager: TubesManager,
+  ) {
     this.measure = measure;
     this.color = color;
     this.allMeasuresHtml = allMeasuresHtml;
@@ -45,26 +47,19 @@ export default class ViewMeasure {
 
     this.allMeasuresHtml.appendChild(this.htmlElement);
 
-    const tubeMeasureChangeHandler = (_: Measure, tubeMeasure: TubeMeasure) => {
-      this.viewTubeMeasures.get(tubeMeasure)?.updateDom();
+    const tubeMeasureCreateHandler = (_: TubesManager, tube: Tube) => {
+      this.createViewTubeMeasure(tube);
     };
-    this.measure.OnTubeMeasureChange.on(tubeMeasureChangeHandler);
+    tubesManager.OnCreateTube.on(tubeMeasureCreateHandler);
 
-    const tubeMeasureCreateHandler = (_: Measure, tubeMeasure: TubeMeasure) => {
-      this.createViewTubeMeasure(tubeMeasure);
+    const tubeMeasureRemoveHandler = (_: TubesManager, tube: Tube) => {
+      this.removeViewTubeMeasure(tube);
     };
-    this.measure.OnTubeMeasureCreate.on(tubeMeasureCreateHandler);
+    tubesManager.OnRemoveTube.on(tubeMeasureRemoveHandler);
 
-    const tubeMeasureRemoveHandler = (_: Measure, tubeMeasure: TubeMeasure) => {
-      this.removeViewTubeMeasure(tubeMeasure);
-    };
-    this.measure.OnTubeMeasureRemove.on(tubeMeasureRemoveHandler);
-
-    this.measure.tubeMeasures.forEach((tubeMeasure: TubeMeasure, _: Tube) => {
-      this.viewTubeMeasures.set(
-        tubeMeasure,
-        new ViewTubeMeasure(tubeMeasure, this.htmlElement),
-      );
+    tubesManager.getTubes().forEach((tube: Tube) => {
+      const newViewTubeMeasure = new ViewTubeMeasure(this.measure.uAnode, tube, this.htmlElement);
+      this.viewTubeMeasures.set(tube, newViewTubeMeasure);
     });
   }
 
@@ -80,14 +75,16 @@ export default class ViewMeasure {
     this.allMeasuresHtml.removeChild(this.htmlElement);
   }
 
-  private createViewTubeMeasure(tubeMeasure: TubeMeasure) {
-    const newViewTubeMeasure = new ViewTubeMeasure(tubeMeasure, this.htmlElement);
-    this.viewTubeMeasures.set(tubeMeasure, newViewTubeMeasure);
+  private createViewTubeMeasure(tube: Tube) {
+    const newViewTubeMeasure = new ViewTubeMeasure(
+      this.measure.uAnode, tube, this.htmlElement,
+    );
+    this.viewTubeMeasures.set(tube, newViewTubeMeasure);
   }
 
-  private removeViewTubeMeasure(tubeMeasure: TubeMeasure) {
-    const viewTubeMeasure = <ViewTubeMeasure> this.viewTubeMeasures.get(tubeMeasure);
+  private removeViewTubeMeasure(tube: Tube) {
+    const viewTubeMeasure = <ViewTubeMeasure> this.viewTubeMeasures.get(tube);
     viewTubeMeasure.deleteHtml();
-    this.viewTubeMeasures.delete(tubeMeasure);
+    this.viewTubeMeasures.delete(tube);
   }
 }

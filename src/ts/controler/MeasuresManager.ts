@@ -27,7 +27,7 @@ export default class MeasuresManager {
     if (this.measuresMap.has(uAnode)) {
       throw Error(`A measure for ${uAnode} has already been created`);
     }
-    const measure = new Measure(uAnode, this.tubesManager);
+    const measure = new Measure(uAnode);
     this.measuresMap.set(uAnode, measure);
     this.onCreateMeasure.trigger(this, measure);
   }

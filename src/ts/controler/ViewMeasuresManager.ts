@@ -4,9 +4,12 @@ import ViewMeasure from '../chart/ViewMeasure';
 import Measure from '../model/Measure';
 import Signal from '../Signal';
 import MeasuresManager from './MeasuresManager';
+import TubesManager from './TubesManager';
 
 export default class ViewMeasuresManager {
   private allMeasuresDiv: HTMLDivElement = <HTMLDivElement>document.getElementById('measures');
+
+  private tubesManager: TubesManager;
 
   private measuresMap: Map<Measure, ViewMeasure> = new Map();
 
@@ -32,7 +35,9 @@ export default class ViewMeasuresManager {
     return this.onRemoveViewMeasure;
   }
 
-  constructor(measuresManager: MeasuresManager) {
+  constructor(measuresManager: MeasuresManager, tubesManager: TubesManager) {
+    this.tubesManager = tubesManager;
+
     const onCreateMeasureHandler = (_: MeasuresManager, measure: Measure) => {
       this.createViewMeasure(measure);
     };
@@ -54,7 +59,9 @@ export default class ViewMeasuresManager {
       color = this.defaultColor;
     }
 
-    const createdViewMeasure = new ViewMeasure(measure, color, this.allMeasuresDiv);
+    const createdViewMeasure = new ViewMeasure(
+      measure, color, this.allMeasuresDiv, this.tubesManager,
+    );
     this.measuresMap.set(measure, createdViewMeasure);
 
     this.onCreateViewMeasure.trigger(this, createdViewMeasure);
