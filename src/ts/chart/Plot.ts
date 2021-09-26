@@ -9,6 +9,7 @@ import ViewMeasuresManager from '../controler/ViewMeasuresManager';
 import ViewTubesManager from '../controler/ViewTubesManager';
 import ViewTube from './ViewTube';
 import Tube from '../model/Tube';
+import TubesManager from '../controler/TubesManager';
 
 interface PlotHTMLElement extends HTMLElement {
   on(eventName: string, handler: Function): void;

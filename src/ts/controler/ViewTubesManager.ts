@@ -3,12 +3,10 @@ import Color from '../chart/Color';
 import ViewTube from '../chart/ViewTube';
 import Tube from '../model/Tube';
 import Signal from '../Signal';
-import TubeMode from '../TubeMode';
+import TubesManager from './TubesManager';
 
 export default class ViewTubesManager {
-  public defaultMode: TubeMode = TubeMode.Triode;
-
-  private tubesList: Array<ViewTube> = [];
+  private tubesList: Map<Tube, ViewTube> = new Map();
 
   private tubeColors: Stack<Color> = new Stack<Color>(
     new Color(0, 0, 255, 1.0),
@@ -19,6 +17,8 @@ export default class ViewTubesManager {
   );
 
   private defaultColor: Color = new Color(0, 0, 0, 1.0);
+
+  private tubesManager: TubesManager;
 
   private readonly onCreateViewTube = new Signal<ViewTubesManager, ViewTube>();
 
@@ -32,44 +32,44 @@ export default class ViewTubesManager {
     return this.onRemoveViewTube;
   }
 
-  public createViewTube(name: string): ViewTube {
-    const tube = new Tube(name, this.defaultMode);
+  constructor(tubesManager: TubesManager) {
+    this.tubesManager = tubesManager;
 
+    const createTubeHandler = (_: TubesManager, tube: Tube) => {
+      this.createViewTube(tube);
+    };
+    this.tubesManager.OnCreateTube.on(createTubeHandler);
+
+    const removeTubeHandler = (_: TubesManager, tube: Tube) => {
+      this.removeViewTube(tube);
+    };
+    this.tubesManager.OnRemoveTube.on(removeTubeHandler);
+  }
+
+  public createViewTube(tube: Tube): ViewTube {
     let color: Color = this.tubeColors.pop();
     if (color === undefined) {
       color = this.defaultColor;
     }
 
-    const createdViewTube = new ViewTube(tube, color);
-    createdViewTube.OnRemoveViewTube.on(
-      (viewTube: ViewTube, _) => this.removeViewTube(viewTube),
-    );
+    const createdViewTube = new ViewTube(tube, color, this.tubesManager);
 
-    this.tubesList.push(createdViewTube);
+    this.tubesList.set(tube, createdViewTube);
 
     this.onCreateViewTube.trigger(this, createdViewTube);
 
     return createdViewTube;
   }
 
-  public removeViewTube(viewTube: ViewTube) {
-    this.tubesList.splice(this.tubesList.indexOf(viewTube), 1);
+  public getViewTube(tube: Tube): ViewTube | undefined {
+    return this.tubesList.get(tube);
+  }
+
+  public removeViewTube(tube: Tube) {
+    const viewTube: ViewTube = <ViewTube> this.tubesList.get(tube);
+    this.tubesList.delete(viewTube.tube);
     this.tubeColors.push(viewTube.getColor());
 
-    this.onRemoveViewTube.trigger(this, viewTube);
-  }
-
-  public getViewTube(viewTube: ViewTube): ViewTube | undefined {
-    const index = this.tubesList.indexOf(viewTube);
-    if (index !== -1) {
-      return undefined;
-    }
-    return this.tubesList[index];
-  }
-
-  public clearViewTubes() {
-    while (this.tubesList.length !== 0) {
-      this.removeViewTube(this.tubesList[0]);
-    }
+    viewTube.deleteTube();
   }
 }

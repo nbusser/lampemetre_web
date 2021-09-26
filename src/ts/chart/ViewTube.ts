@@ -1,6 +1,6 @@
+import TubesManager from '../controler/TubesManager';
 import Capture from '../model/Capture';
 import Tube from '../model/Tube';
-import Signal from '../Signal';
 import TubeMode from '../TubeMode';
 import Color from './Color';
 
@@ -13,17 +13,15 @@ export default class ViewTube {
 
   private color: Color;
 
+  private tubesManager: TubesManager;
+
   private tubeLi: HTMLElement;
 
   private tubeCapturesList: HTMLUListElement;
 
-  private readonly onRemoveViewTube = new Signal<ViewTube, undefined>();
+  constructor(tube: Tube, color: Color, tubesManager: TubesManager) {
+    this.tubesManager = tubesManager;
 
-  public get OnRemoveViewTube(): Signal<ViewTube, undefined> {
-    return this.onRemoveViewTube;
-  }
-
-  constructor(tube: Tube, color: Color) {
     this.tube = tube;
 
     const tubeCreateCaptureHandler = (t: Tube, capture: Capture) => {
@@ -60,8 +58,7 @@ export default class ViewTube {
     removeTubeBtn.classList.add('btn_remove_tube');
     removeTubeBtn.textContent = '-';
     removeTubeBtn.addEventListener('click', () => {
-      this.deleteTube();
-      this.onRemoveViewTube.trigger(this, undefined);
+      this.tubesManager.removeTube(this.tube);
     });
     tubeHeaderDiv.appendChild(removeTubeBtn);
 
@@ -182,7 +179,6 @@ export default class ViewTube {
     ViewTube.tubesUlHtml.removeChild(this.tubeLi);
     this.capturesMap.forEach((value, key) => {
       this.tube.deleteCapture(key);
-      // this.removeCapture(key);
     });
   }
 }
