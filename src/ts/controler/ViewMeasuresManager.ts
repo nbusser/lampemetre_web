@@ -69,6 +69,8 @@ export default class ViewMeasuresManager {
   private removeViewMeasure(uAnodeMeasure: number) {
     const viewMeasure: ViewMeasure = <ViewMeasure> this.measuresMap.get(uAnodeMeasure);
 
+    this.measuresMap.delete(uAnodeMeasure);
+
     this.colors.push(viewMeasure.getColor());
 
     viewMeasure.removeDiv();
