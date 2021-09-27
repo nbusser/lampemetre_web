@@ -1,56 +1,75 @@
+import MeasuresManager, { MeasureResult } from '../controler/MeasuresManager';
 import Capture from '../model/Capture';
 import Tube from '../model/Tube';
 import TubeMode from '../TubeMode';
-
-type MeasureResult = {
-  internalTR: Number,
-  slopeI: Number,
-  coefI: Number,
-  iRefy: Number,
-  uRefx: Number
-};
 
 export default class ViewTubeMeasure {
   private uAnode: number;
 
   private tube: Tube;
 
+  private measuresManager: MeasuresManager;
+
   private measureHtml: HTMLElement;
 
-  private tubeMeasureHtml: HTMLElement = document.createElement('div');
+  private tubeMeasureHtml: HTMLDivElement = <HTMLDivElement> document.createElement('div');
 
-  private measureResultErrorHtml: HTMLElement = document.createElement('p');
+  private validResultHtml: HTMLDivElement = <HTMLDivElement> document.createElement('div');
 
-  private measureResultsHtml: HTMLUListElement = document.createElement('ul');
+  private validResultListHtml: HTMLUListElement = <HTMLUListElement> document.createElement('ul');
 
-  private internalTrHtml: HTMLLIElement = document.createElement('li');
+  private internalTrHtml: HTMLLIElement = <HTMLLIElement> document.createElement('li');
 
-  private slopeIHtml: HTMLLIElement = document.createElement('li');
+  private slopeIHtml: HTMLLIElement = <HTMLLIElement> document.createElement('li');
 
-  private coefIHtml: HTMLLIElement = document.createElement('li');
+  private coefIHtml: HTMLLIElement = <HTMLLIElement> document.createElement('li');
 
-  private iRefy: HTMLLIElement = document.createElement('li');
+  private iRefyHtml: HTMLLIElement = <HTMLLIElement> document.createElement('li');
 
-  private uRefx: HTMLLIElement = document.createElement('li');
+  private uRefxHtml: HTMLLIElement = <HTMLLIElement> document.createElement('li');
 
-  constructor(uAnode: number, tube: Tube, measureHtml: HTMLElement) {
+  private invalidResultHtml: HTMLDivElement = <HTMLDivElement> document.createElement('div');
+
+  private invalidReasonHtml: HTMLImageElement = <HTMLImageElement> document.createElement('p');
+
+  constructor(
+    uAnode: number, tube: Tube, measuresManager: MeasuresManager, measureHtml: HTMLElement,
+  ) {
     this.uAnode = uAnode;
     this.tube = tube;
+    this.measuresManager = measuresManager;
     this.measureHtml = measureHtml;
-
-    this.tubeMeasureHtml.classList.add('tube_measure_div');
-
-    const tubeMeasureDivTitle = document.createElement('p');
-    tubeMeasureDivTitle.textContent = tube.name;
-    this.tubeMeasureHtml.appendChild(tubeMeasureDivTitle);
 
     this.measureHtml.appendChild(this.tubeMeasureHtml);
 
-    this.measureResultsHtml.appendChild(this.internalTrHtml);
-    this.measureResultsHtml.appendChild(this.slopeIHtml);
-    this.measureResultsHtml.appendChild(this.coefIHtml);
-    this.measureResultsHtml.appendChild(this.iRefy);
-    this.measureResultsHtml.appendChild(this.uRefx);
+    this.tubeMeasureHtml.classList.add('tube_measure_div');
+
+    const tubeMeasureTitle = document.createElement('p');
+    tubeMeasureTitle.textContent = tube.name;
+    this.tubeMeasureHtml.appendChild(tubeMeasureTitle);
+
+    this.tubeMeasureHtml.appendChild(this.validResultHtml);
+    this.tubeMeasureHtml.appendChild(this.invalidResultHtml);
+    this.toggleResultBlock(false);
+
+    this.validResultHtml.appendChild(this.internalTrHtml);
+    this.validResultHtml.appendChild(this.slopeIHtml);
+    this.validResultHtml.appendChild(this.coefIHtml);
+    this.validResultHtml.appendChild(this.iRefyHtml);
+    this.validResultHtml.appendChild(this.uRefxHtml);
+
+    this.invalidResultHtml.appendChild(this.invalidReasonHtml);
+    this.invalidReasonHtml.textContent = '/';
+    this.updateInvalid('/');
+
+    const initMeasureResults: MeasureResult = {
+      internalTR: -1,
+      slopeI: -1,
+      coefI: -1,
+      iRefy: -1,
+      uRefx: -1,
+    };
+    this.updateValid(initMeasureResults);
 
     this.tube.OnCreateCapture.on((tube: Tube, capture: Capture) => this.updateDom());
     this.tube.OnRemoveCapture.on((tube: Tube, capture: Capture) => this.updateDom());
@@ -63,8 +82,16 @@ export default class ViewTubeMeasure {
     this.measureHtml.removeChild(this.tubeMeasureHtml);
   }
 
-  public updateDom() {
-    const result = this.performMeasure();
+  private updateDom() {
+    try {
+      const result = this.measuresManager.performMeasure(this.uAnode, this.tube);
+      this.updateValid(result);
+      this.toggleResultBlock(true);
+    } catch (Error) {
+      this.updateInvalid(Error.message);
+      this.toggleResultBlock(false);
+    }
+    return;
 
     if (typeof result === 'string') {
       this.measureResultErrorHtml.textContent = '/';
@@ -75,11 +102,7 @@ export default class ViewTubeMeasure {
       }
       this.tubeMeasureHtml.appendChild(this.measureResultErrorHtml);
     } else {
-      this.internalTrHtml.textContent = `Internal TR: ${result.internalTR} Ohm`;
-      this.slopeIHtml.textContent = `Pente I: ${result.slopeI} mA`;
-      this.coefIHtml.textContent = `Coef I: ${result.coefI} mA`;
-      this.iRefy.textContent = `I ref y: ${result.iRefy} mA`;
-      this.uRefx.textContent = `U ref x: ${result.uRefx} mA`;
+      this.updateMeasure(result);
 
       if (this.tubeMeasureHtml.contains(this.measureResultErrorHtml)) {
         this.tubeMeasureHtml.removeChild(this.measureResultErrorHtml);
@@ -88,108 +111,20 @@ export default class ViewTubeMeasure {
     }
   }
 
-  private performMeasure(): MeasureResult | string {
-    if (this.tube.mode !== TubeMode.Triode) {
-      return 'Seul le mode triode est supporté';
-    }
+  private updateValid(result: MeasureResult) {
+    this.internalTrHtml.textContent = `Internal TR: ${result.internalTR} Ohm`;
+    this.slopeIHtml.textContent = `Pente I: ${result.slopeI} mA`;
+    this.coefIHtml.textContent = `Coef I: ${result.coefI} mA`;
+    this.iRefyHtml.textContent = `I ref y: ${result.iRefy} mA`;
+    this.uRefxHtml.textContent = `U ref x: ${result.uRefx} mA`;
+  }
 
-    if (this.tube.captures.length < 2) {
-      return 'Le tube doit contenir au moins deux captures';
-    }
+  private updateInvalid(reason: string) {
+    this.invalidReasonHtml.title = reason;
+  }
 
-    const capturesSorted = [...this.tube.captures].sort((a: Capture, b: Capture) => {
-      if (a.uGrille < b.uGrille) {
-        return -1;
-      } if (a.uGrille > b.uGrille) {
-        return 1;
-      }
-      return 0;
-    });
-
-    const minGridCapture: Capture = capturesSorted[0];
-
-    const positionUMeasure = minGridCapture.uAnode.find((uAnode) => uAnode > this.uAnode);
-    if (positionUMeasure === undefined) {
-      return `Aucun échantillon capturé au delà de la tension anode ${this.uAnode}V`;
-    }
-
-    let closestUanodeIndex: number;
-    if (positionUMeasure === 0) {
-      closestUanodeIndex = positionUMeasure;
-    } else {
-      const distance = (uAnode: number) => Math.abs(uAnode - this.uAnode);
-      closestUanodeIndex = (
-        distance(minGridCapture.uAnode[positionUMeasure])
-          < distance(minGridCapture.uAnode[positionUMeasure - 1])
-      ) ? positionUMeasure : positionUMeasure - 1;
-    }
-
-    const iTest = minGridCapture.iCathode[closestUanodeIndex] * 32;
-
-    const iMeasureMin = iTest - 16;
-    const positionIMeasureMin = minGridCapture.iCathode.find(
-      (iCathode) => iCathode > iMeasureMin,
-    );
-    if (positionIMeasureMin === undefined) {
-      return `Aucun échantillon ne dépasse le point de mesure minimum ${iMeasureMin}mA`;
-    }
-    let closestImeasureMinIndex: number;
-    if (positionIMeasureMin === 0) {
-      closestImeasureMinIndex = positionIMeasureMin;
-    } else {
-      const distance = (uAnode: number) => Math.abs(uAnode - this.uAnode);
-      closestImeasureMinIndex = (
-        distance(minGridCapture.uAnode[positionIMeasureMin])
-          < distance(minGridCapture.uAnode[positionIMeasureMin - 1])
-      ) ? positionIMeasureMin : positionIMeasureMin - 1;
-    }
-
-    const iMeasureMax = iTest + 16;
-    const positionIMeasureMax = minGridCapture.iCathode.find(
-      (iCathode) => iCathode > iMeasureMax,
-    );
-    if (positionIMeasureMax === undefined) {
-      return `Aucun échantillon ne dépasse le point de mesure maximum ${iMeasureMax}mA`;
-    }
-    let closestImeasureMaxIndex: number;
-    if (positionIMeasureMax === 0) {
-      closestImeasureMaxIndex = positionIMeasureMax;
-    } else {
-      const distance = (uAnode: number) => Math.abs(uAnode - this.uAnode);
-      closestImeasureMaxIndex = (
-        distance(minGridCapture.uAnode[positionIMeasureMax])
-          < distance(minGridCapture.uAnode[positionIMeasureMax - 1])
-      ) ? positionIMeasureMax : positionIMeasureMax - 1;
-    }
-
-    const deltaU = minGridCapture.uAnode[closestImeasureMaxIndex]
-      - minGridCapture.uAnode[closestImeasureMinIndex];
-
-    const deltaI = minGridCapture.iCathode[closestImeasureMaxIndex]
-      - minGridCapture.iCathode[closestImeasureMinIndex]
-      * 0.03125;
-
-    const internalR = Math.floor((deltaU / deltaI) * 100);
-    const internalTR = Math.floor(internalR / 100) / 10;
-
-    const curinf = capturesSorted[1].iCathode[positionUMeasure];
-
-    let deltaIGrid = minGridCapture.iCathode[positionUMeasure] - curinf;
-
-    const slopeI = Math.floor(deltaIGrid * 3.125) / 100;
-
-    deltaIGrid = Math.floor(deltaIGrid * 31.25);
-
-    const coefI = Math.floor((internalR * deltaIGrid) / 1000000);
-
-    const iRefy = Math.floor(minGridCapture.iCathode[positionUMeasure] * 0.03125 * 10) / 10;
-
-    return {
-      internalTR,
-      slopeI,
-      coefI,
-      iRefy,
-      uRefx: 0,
-    };
+  private toggleResultBlock(validResult: boolean) {
+    this.validResultHtml.hidden = !validResult;
+    this.invalidResultHtml.hidden = validResult;
   }
 }

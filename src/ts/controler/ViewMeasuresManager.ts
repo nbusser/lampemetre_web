@@ -8,6 +8,8 @@ import TubesManager from './TubesManager';
 export default class ViewMeasuresManager {
   private allMeasuresDiv: HTMLDivElement = <HTMLDivElement>document.getElementById('measures');
 
+  private measuresManager: MeasuresManager;
+
   private tubesManager: TubesManager;
 
   private measuresMap: Map<number, ViewMeasure> = new Map();
@@ -35,20 +37,21 @@ export default class ViewMeasuresManager {
   }
 
   constructor(measuresManager: MeasuresManager, tubesManager: TubesManager) {
+    this.measuresManager = measuresManager;
     this.tubesManager = tubesManager;
 
     const onCreateMeasureHandler = (_: MeasuresManager, uAnodeMeasure: number) => {
       this.createViewMeasure(uAnodeMeasure);
     };
-    measuresManager.OnCreateMeasure.on(onCreateMeasureHandler);
+    this.measuresManager.OnCreateMeasure.on(onCreateMeasureHandler);
 
     const onRemoveMeasureHandler = (_: MeasuresManager, uAnodeMeasure: number) => {
       this.removeViewMeasure(uAnodeMeasure);
     };
-    measuresManager.OnRemoveMeasure.on(onRemoveMeasureHandler);
+    this.measuresManager.OnRemoveMeasure.on(onRemoveMeasureHandler);
 
     document.getElementById('btn_clear_measures')?.addEventListener('click', () => {
-      measuresManager.clearMeasures();
+      this.measuresManager.clearMeasures();
     });
   }
 
@@ -63,7 +66,7 @@ export default class ViewMeasuresManager {
     }
 
     const createdViewMeasure = new ViewMeasure(
-      uAnodeMeasure, color, this.allMeasuresDiv, this.tubesManager,
+      uAnodeMeasure, color, this.allMeasuresDiv, this.tubesManager, this.measuresManager,
     );
     this.measuresMap.set(uAnodeMeasure, createdViewMeasure);
 

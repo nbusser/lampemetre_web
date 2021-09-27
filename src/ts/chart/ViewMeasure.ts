@@ -1,4 +1,5 @@
 import { Shape } from 'plotly.js';
+import MeasuresManager from '../controler/MeasuresManager';
 import TubesManager from '../controler/TubesManager';
 import Tube from '../model/Tube';
 import Color from './Color';
@@ -15,14 +16,21 @@ export default class ViewMeasure {
 
   private htmlElement: HTMLElement;
 
+  private measuresManager: MeasuresManager;
+
   private viewTubeMeasures: Map<Tube, ViewTubeMeasure> = new Map();
 
   constructor(
-    uAnodeMeasure: number, color: Color, allMeasuresHtml: HTMLElement, tubesManager: TubesManager,
+    uAnodeMeasure: number,
+    color: Color,
+    allMeasuresHtml: HTMLElement,
+    tubesManager: TubesManager,
+    measuresManager: MeasuresManager,
   ) {
     this.uAnodeMeasure = uAnodeMeasure;
     this.color = color;
     this.allMeasuresHtml = allMeasuresHtml;
+    this.measuresManager = measuresManager;
 
     this.shape = <Shape>{
       type: 'line',
@@ -57,7 +65,9 @@ export default class ViewMeasure {
     tubesManager.OnRemoveTube.on(tubeMeasureRemoveHandler);
 
     tubesManager.getTubes().forEach((tube: Tube) => {
-      const newViewTubeMeasure = new ViewTubeMeasure(this.uAnodeMeasure, tube, this.htmlElement);
+      const newViewTubeMeasure = new ViewTubeMeasure(
+        this.uAnodeMeasure, tube, this.measuresManager, this.htmlElement,
+      );
       this.viewTubeMeasures.set(tube, newViewTubeMeasure);
     });
   }
@@ -76,7 +86,7 @@ export default class ViewMeasure {
 
   private createViewTubeMeasure(tube: Tube) {
     const newViewTubeMeasure = new ViewTubeMeasure(
-      this.uAnodeMeasure, tube, this.htmlElement,
+      this.uAnodeMeasure, tube, this.measuresManager, this.htmlElement,
     );
     this.viewTubeMeasures.set(tube, newViewTubeMeasure);
   }
