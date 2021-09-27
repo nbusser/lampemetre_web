@@ -1,4 +1,3 @@
-import ControlPanel from './chart/ControlPanel';
 import Plot from './chart/Plot';
 import MeasuresManager from './controler/MeasuresManager';
 import TubesManager from './controler/TubesManager';
@@ -13,8 +12,7 @@ const viewTubesManager = new ViewTubesManager(tubesManager);
 const viewMeasureManager = new ViewMeasuresManager(measureManager, tubesManager);
 
 const rootHtml: HTMLElement = <HTMLElement>document.getElementById('chart');
-const plot = new Plot(rootHtml, viewTubesManager, viewMeasureManager, measureManager);
-const _ = new ControlPanel(plot, tubesManager, measureManager);
+const _ = new Plot(rootHtml, viewTubesManager, viewMeasureManager, measureManager);
 
 tubesManager.createTube('Test', TubeMode.Triode);
 tubesManager.createTube('Test2', TubeMode.Pentode);

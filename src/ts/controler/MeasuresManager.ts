@@ -33,7 +33,7 @@ export default class MeasuresManager {
   }
 
   public clearMeasures() {
-    this.measuresMap.forEach((measure, uAnode) => {
+    this.measuresMap.forEach((_, uAnode) => {
       this.removeMeasure(uAnode);
     });
   }

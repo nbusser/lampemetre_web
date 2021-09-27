@@ -3,6 +3,7 @@ import Color from '../chart/Color';
 import ViewTube from '../chart/ViewTube';
 import Tube from '../model/Tube';
 import Signal from '../Signal';
+import TubeMode from '../TubeMode';
 import TubesManager from './TubesManager';
 
 export default class ViewTubesManager {
@@ -44,6 +45,17 @@ export default class ViewTubesManager {
       this.removeViewTube(tube);
     };
     this.tubesManager.OnRemoveTube.on(removeTubeHandler);
+
+    document.getElementById('btn_add_tube')?.addEventListener('click', () => {
+      const name = prompt('Nom du tube', '');
+      if (name !== null && name !== ' ') {
+        this.tubesManager.createTube(name, TubeMode.Triode);
+      }
+    });
+
+    document.getElementById('btn_clear')?.addEventListener('click', () => {
+      this.tubesManager.clearTubes();
+    });
   }
 
   private createViewTube(tube: Tube) {

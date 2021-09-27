@@ -46,6 +46,10 @@ export default class ViewMeasuresManager {
       this.removeViewMeasure(uAnodeMeasure);
     };
     measuresManager.OnRemoveMeasure.on(onRemoveMeasureHandler);
+
+    document.getElementById('btn_clear_measures')?.addEventListener('click', () => {
+      measuresManager.clearMeasures();
+    });
   }
 
   private createViewMeasure(uAnodeMeasure: number) {
