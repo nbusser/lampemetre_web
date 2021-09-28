@@ -6,6 +6,14 @@
     display: flex;
 }
 
+ #tubes {
+    width: 100%;
+ }
+
+#chart_tubes {
+    display: flex;
+}
+
 #ul_tubes {
     display: flex;
     align-items: flex-start;
@@ -13,16 +21,15 @@
 }
 
 .li_tube {
-    margin-right: 2%;
-    margin-bottom: 2%;
+    margin-right: 1em;
+    margin-bottom: 1em;
     list-style: none;
     border: 2px solid black;
     border-radius: 2%;
-    padding: 2%;
+    padding: 1.5em;
 }
 
 .measure {
-    font-size: 75%;
     margin: 1%;
 }
 
@@ -44,11 +51,15 @@
     align-self: center;
 }
 
-.capture_value {
-    font-size: 80%;
-}
-
 .div_select_mode {
     display: flex;
     margin-bottom: 15%;
+}
+
+.warning_sign {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-image: url('/img/warning.svg');
+    background-size: contain;
 }

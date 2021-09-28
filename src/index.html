@@ -7,9 +7,22 @@
 
     <body>
 
-        <h1>Lampemetre<h1>
+        <h1>Lampemetre</h1>
 
-        <div id="chart"></div>
+        <div id="chart_tubes">
+            <div id="chart"></div>
+
+            <div id="tubes">
+                <h2>Tubes:</h2>
+                <div id="tubes_control_panel">
+                    <button id="btn_add_tube">+</button>
+                    <button id="btn_clear">Clear</button>
+                </div>
+                <div id="all_tubes">
+                    <ul id="ul_tubes"></ul>
+                </div>
+            </div>
+        </div>
 
         <section id="control_panel">
             <div id=params>
@@ -23,24 +36,14 @@
                     <input type="number" id="icathode_max" name="icathode_max">
                 </div>
             </div>
-
-            <div>
-                <button id="btn_clear_measures">Clear Mesures</button>
-            </div>
         </section>
 
-        <section id="tubes">
-            <p>Tubes:</p>
-            <div id="all_tubes">
-                <ul id="ul_tubes"></ul>
-                <div id="tubes_control_panel">
-                    <button id="btn_add_tube">+</button>
-                    <button id="btn_clear">Clear</button>
-                </div>
-            </div>
+        <section id=measures_section>
+            <h2>Mesures</h2>
+            <button id="btn_clear_measures">Clear Mesures</button>
+            <div id="measures"></div>
         </section>
-
-        <section id="measures"></section>
+        
 
     </body>
 

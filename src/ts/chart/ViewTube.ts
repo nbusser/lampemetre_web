@@ -45,7 +45,7 @@ export default class ViewTube {
     tubeHeaderDiv.classList.add('div_tube_header');
     this.tubeLi.appendChild(tubeHeaderDiv);
 
-    const title = document.createElement('h4');
+    const title = document.createElement('h2');
     title.textContent = tube.name;
     title.style.color = this.color.toString();
     title.classList.add('tube_name');
@@ -92,7 +92,7 @@ export default class ViewTube {
     newCaptureDiv.classList.add('tube_capture_button_inline');
     capturesDiv.appendChild(newCaptureDiv);
 
-    const catpuresHeader = document.createElement('h5');
+    const catpuresHeader = document.createElement('h3');
     catpuresHeader.textContent = 'Captures:';
     catpuresHeader.classList.add('captures_list_header');
     catpuresHeader.classList.add('header_text');

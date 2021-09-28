@@ -30,7 +30,7 @@ export default class ViewTubeMeasure {
 
   private invalidResultHtml: HTMLDivElement = <HTMLDivElement> document.createElement('div');
 
-  private invalidReasonHtml: HTMLImageElement = <HTMLImageElement> document.createElement('p');
+  private invalidReasonHtml: HTMLSpanElement = <HTMLSpanElement> document.createElement('span');
 
   constructor(
     uAnode: number, tube: Tube, measuresManager: MeasuresManager, measureHtml: HTMLElement,
@@ -44,7 +44,7 @@ export default class ViewTubeMeasure {
 
     this.tubeMeasureHtml.classList.add('tube_measure_div');
 
-    const tubeMeasureTitle = document.createElement('p');
+    const tubeMeasureTitle = document.createElement('h3');
     tubeMeasureTitle.textContent = tube.name;
     this.tubeMeasureHtml.appendChild(tubeMeasureTitle);
 
@@ -58,8 +58,8 @@ export default class ViewTubeMeasure {
     this.validResultHtml.appendChild(this.iRefyHtml);
     this.validResultHtml.appendChild(this.uRefxHtml);
 
+    this.invalidReasonHtml.classList.add('warning_sign');
     this.invalidResultHtml.appendChild(this.invalidReasonHtml);
-    this.invalidReasonHtml.textContent = '/';
     this.updateInvalid('/');
 
     const initMeasureResults: MeasureResult = {
@@ -90,24 +90,6 @@ export default class ViewTubeMeasure {
     } catch (Error) {
       this.updateInvalid(Error.message);
       this.toggleResultBlock(false);
-    }
-    return;
-
-    if (typeof result === 'string') {
-      this.measureResultErrorHtml.textContent = '/';
-      this.measureResultErrorHtml.title = result;
-
-      if (this.tubeMeasureHtml.contains(this.measureResultsHtml)) {
-        this.tubeMeasureHtml.removeChild(this.measureResultsHtml);
-      }
-      this.tubeMeasureHtml.appendChild(this.measureResultErrorHtml);
-    } else {
-      this.updateMeasure(result);
-
-      if (this.tubeMeasureHtml.contains(this.measureResultErrorHtml)) {
-        this.tubeMeasureHtml.removeChild(this.measureResultErrorHtml);
-      }
-      this.tubeMeasureHtml.appendChild(this.measureResultsHtml);
     }
   }
 

@@ -24,8 +24,8 @@ export default class Plot {
   private captureTraceMap: Map<Capture, PlotData> = new Map();
 
   private layout: Partial<Layout> = {
-    width: 600,
-    height: 400,
+    width: 900,
+    height: 600,
     shapes: this.annotations,
   };
 
