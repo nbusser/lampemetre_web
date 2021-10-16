@@ -25,6 +25,7 @@
   "homepage": "https://github.com/nbusser/lampemetre_web#readme",
   "dependencies": {
     "@parcel/config-default": "^2.0.0-alpha.3",
+    "@types/w3c-web-serial": "^1.0.2",
     "plotly.js": "npm:plotly.js-dist@^2.3.1",
     "stack-typescript": "^1.0.4"
   },
