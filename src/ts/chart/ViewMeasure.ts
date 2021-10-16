@@ -20,6 +20,10 @@ export default class ViewMeasure {
 
   private viewTubeMeasures: Map<Tube, ViewTubeMeasure> = new Map();
 
+  private tableHtml: HTMLTableElement = <HTMLTableElement> document.createElement('table');
+
+  private tableBody: HTMLElement = <HTMLElement> document.createElement('tbody');
+
   constructor(
     uAnodeMeasure: number,
     color: Color,
@@ -48,9 +52,24 @@ export default class ViewMeasure {
 
     this.htmlElement = document.createElement('div');
     const title = document.createElement('h2');
+    title.style.textAlign = 'center';
     title.textContent = `Mesure (${uAnodeMeasure}V)`;
     title.style.color = this.color.toString();
     this.htmlElement.appendChild(title);
+    this.htmlElement.appendChild(this.tableHtml);
+
+    this.tableBody.innerHTML = (`
+      <tr>
+        <th></th>
+        <th>Internal TR</th>
+        <th>Pente I</th>
+        <th>Coef I</th>
+        <th>I ref y</th>
+        <th>U ref x</th>
+      </tr>
+    `
+    );
+    this.tableHtml.appendChild(this.tableBody);
 
     this.allMeasuresHtml.appendChild(this.htmlElement);
 
@@ -66,7 +85,7 @@ export default class ViewMeasure {
 
     tubesManager.getTubes().forEach((tube: Tube) => {
       const newViewTubeMeasure = new ViewTubeMeasure(
-        this.uAnodeMeasure, tube, this.measuresManager, this.htmlElement,
+        this.uAnodeMeasure, tube, this.measuresManager, this.tableBody,
       );
       this.viewTubeMeasures.set(tube, newViewTubeMeasure);
     });
@@ -86,7 +105,7 @@ export default class ViewMeasure {
 
   private createViewTubeMeasure(tube: Tube) {
     const newViewTubeMeasure = new ViewTubeMeasure(
-      this.uAnodeMeasure, tube, this.measuresManager, this.htmlElement,
+      this.uAnodeMeasure, tube, this.measuresManager, this.tableBody,
     );
     this.viewTubeMeasures.set(tube, newViewTubeMeasure);
   }

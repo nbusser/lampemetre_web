@@ -4,6 +4,7 @@
 
 #measures {
     display: flex;
+    gap: 2em;
 }
 
  #tubes {
@@ -15,8 +16,9 @@
 }
 
 #ul_tubes {
+    gap: 1em;
     display: flex;
-    align-items: flex-start;
+    /* align-items: flex-start; */
     flex-wrap: wrap;
 }
 

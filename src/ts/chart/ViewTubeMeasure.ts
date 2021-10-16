@@ -10,53 +10,31 @@ export default class ViewTubeMeasure {
 
   private measuresManager: MeasuresManager;
 
-  private measureHtml: HTMLElement;
+  private measureTableHtml: HTMLElement;
 
-  private tubeMeasureHtml: HTMLDivElement = <HTMLDivElement> document.createElement('div');
-
-  private validResultHtml: HTMLDivElement = <HTMLDivElement> document.createElement('div');
-
-  private validResultListHtml: HTMLUListElement = <HTMLUListElement> document.createElement('ul');
-
-  private internalTrHtml: HTMLLIElement = <HTMLLIElement> document.createElement('li');
-
-  private slopeIHtml: HTMLLIElement = <HTMLLIElement> document.createElement('li');
-
-  private coefIHtml: HTMLLIElement = <HTMLLIElement> document.createElement('li');
-
-  private iRefyHtml: HTMLLIElement = <HTMLLIElement> document.createElement('li');
-
-  private uRefxHtml: HTMLLIElement = <HTMLLIElement> document.createElement('li');
+  private tableRowHtml: HTMLTableRowElement = <HTMLTableRowElement> document.createElement('tr');
 
   private invalidResultHtml: HTMLDivElement = <HTMLDivElement> document.createElement('div');
 
   private invalidReasonHtml: HTMLSpanElement = <HTMLSpanElement> document.createElement('span');
 
   constructor(
-    uAnode: number, tube: Tube, measuresManager: MeasuresManager, measureHtml: HTMLElement,
+    uAnode: number,
+    tube: Tube,
+    measuresManager: MeasuresManager,
+    measureTableHtml: HTMLElement,
   ) {
     this.uAnode = uAnode;
     this.tube = tube;
     this.measuresManager = measuresManager;
-    this.measureHtml = measureHtml;
+    this.measureTableHtml = measureTableHtml;
 
-    this.measureHtml.appendChild(this.tubeMeasureHtml);
-
-    this.tubeMeasureHtml.classList.add('tube_measure_div');
-
-    const tubeMeasureTitle = document.createElement('h3');
-    tubeMeasureTitle.textContent = tube.name;
-    this.tubeMeasureHtml.appendChild(tubeMeasureTitle);
-
-    this.tubeMeasureHtml.appendChild(this.validResultHtml);
-    this.tubeMeasureHtml.appendChild(this.invalidResultHtml);
-    this.toggleResultBlock(false);
-
-    this.validResultHtml.appendChild(this.internalTrHtml);
-    this.validResultHtml.appendChild(this.slopeIHtml);
-    this.validResultHtml.appendChild(this.coefIHtml);
-    this.validResultHtml.appendChild(this.iRefyHtml);
-    this.validResultHtml.appendChild(this.uRefxHtml);
+    this.measureTableHtml.appendChild(this.tableRowHtml);
+    this.tableRowHtml.innerHTML = `
+    <tr>
+      <th>${this.tube.name}</th>
+    </tr>
+    `;
 
     this.invalidReasonHtml.classList.add('warning_sign');
     this.invalidResultHtml.appendChild(this.invalidReasonHtml);
@@ -79,34 +57,44 @@ export default class ViewTubeMeasure {
   }
 
   public deleteHtml() {
-    this.measureHtml.removeChild(this.tubeMeasureHtml);
+    this.measureTableHtml.removeChild(this.tableRowHtml);
   }
 
   private updateDom() {
     try {
       const result = this.measuresManager.performMeasure(this.uAnode, this.tube);
       this.updateValid(result);
-      this.toggleResultBlock(true);
     } catch (Error) {
       this.updateInvalid(Error.message);
-      this.toggleResultBlock(false);
     }
   }
 
   private updateValid(result: MeasureResult) {
-    this.internalTrHtml.textContent = `Internal TR: ${result.internalTR} Ohm`;
-    this.slopeIHtml.textContent = `Pente I: ${result.slopeI} mA`;
-    this.coefIHtml.textContent = `Coef I: ${result.coefI} mA`;
-    this.iRefyHtml.textContent = `I ref y: ${result.iRefy} mA`;
-    this.uRefxHtml.textContent = `U ref x: ${result.uRefx} mA`;
+    this.tableRowHtml.innerHTML = `
+      <th>${this.tube.name}</th>
+      <td>${result.internalTR} kOhm</td>
+      <td>${result.slopeI} mA/V</td>
+      <td>${result.coefI} mA</td>
+      <td>${result.iRefy} mA</td>
+      <td>${result.uRefx} mA</td>
+    `;
   }
 
   private updateInvalid(reason: string) {
-    this.invalidReasonHtml.title = reason;
-  }
+    this.tableRowHtml.innerHTML = '';
+    const header = document.createElement('th');
+    header.textContent = this.tube.name;
 
-  private toggleResultBlock(validResult: boolean) {
-    this.validResultHtml.hidden = !validResult;
-    this.invalidResultHtml.hidden = validResult;
+    this.tableRowHtml.appendChild(header);
+
+    for (let i = 0; i < 5; i += 1) {
+      const td = document.createElement('td');
+      td.style.textAlign = 'center';
+      const warningSpan = document.createElement('span');
+      warningSpan.title = reason;
+      warningSpan.classList.add('warning_sign');
+      td.appendChild(warningSpan);
+      this.tableRowHtml.appendChild(td);
+    }
   }
 }
