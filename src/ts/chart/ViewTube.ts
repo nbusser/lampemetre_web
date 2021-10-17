@@ -120,7 +120,7 @@ export default class ViewTube {
   private async createNewCapture() {
     const uGrid = prompt('Tension grille', '');
     if (uGrid !== null && !Number.isNaN(parseInt(uGrid, 10))) {
-      const result = await performCapture(100, Number.parseInt(uGrid, 10));
+      const result = await performCapture(2, Number.parseInt(uGrid, 10));
       this.tube.createCapture(
         result.tensionsAnode,
         parseInt(uGrid, 10),

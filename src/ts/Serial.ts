@@ -62,7 +62,7 @@ async function acquireTensionsAnode(
 ) {
   let readBuffer = [];
   try {
-    writeByteSerial(serialWriter, 101);
+    await writeByteSerial(serialWriter, 101);
 
     const bytesToRead = 128;
     readBuffer = await readBytesSerialPackUint16(serialReader, bytesToRead, 1500);
@@ -87,7 +87,8 @@ async function acquireCurrentCathode(
   const iCathodeSample = [];
   try {
     const uGridToSend = 150 + (uGrid * 2);
-    writeByteSerial(serialWriter, uGridToSend);
+
+    await writeByteSerial(serialWriter, uGridToSend);
 
     const bytesToRead = 128;
     const readBuffer = await readBytesSerialPackUint16(serialReader, bytesToRead, 15000);
@@ -150,15 +151,12 @@ export default async function performCapture(
   try {
     tensionsAnode = await acquireTensionsAnode(serialReader, serialWriter);
 
-    const samplingMode = iCathodeMax < 32 ? 32 : 50;
-    writeByteSerial(serialWriter, samplingMode);
-
-    await sleep(100);
+    const samplingMode = iCathodeMax <= 32 ? 32 : 50;
+    await writeByteSerial(serialWriter, samplingMode);
 
     currentsCathode = await acquireCurrentCathode(serialReader, serialWriter, uGrid);
-    await sleep(200);
 
-    writeByteSerial(serialWriter, 105);
+    await writeByteSerial(serialWriter, 105);
   } finally {
     serialReader.cancel();
     serialReader.releaseLock();
