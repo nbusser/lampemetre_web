@@ -131,9 +131,23 @@ export default class ViewTube {
   }
 
   private addCapture(capture: Capture) {
+    const { children } = this.tubeCapturesList;
+    let insertBefore = null;
+    for (let i = 0; i < children.length; i += 1) {
+      const child = children[i];
+      const currentGrid = child.getAttribute('uGrid');
+      if (currentGrid === null) {
+        throw Error('Capture has no HTML field value indicating its uGrid');
+      } else if (Number.parseFloat(currentGrid) > capture.uGrille) {
+        insertBefore = child;
+        break;
+      }
+    }
+
     const element: HTMLElement = document.createElement('li');
     element.classList.add('li_capture');
-    this.tubeCapturesList.appendChild(element);
+    element.setAttribute('uGrid', capture.uGrille.toString());
+    this.tubeCapturesList.insertBefore(element, insertBefore);
 
     const divCapture: HTMLDivElement = document.createElement('div');
     divCapture.classList.add('tube_capture_button_inline');
