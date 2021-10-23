@@ -12,6 +12,6 @@ export default class Capture {
   }
 
   toString(): string {
-    return `${this.uGrille}V`;
+    return `-${this.uGrille}V`;
   }
 }
