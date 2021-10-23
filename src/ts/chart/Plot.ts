@@ -105,7 +105,7 @@ export default class Plot {
       marker: {
         color: tubeColor.toString(),
       },
-      name: `${capture.uGrille}V`,
+      name: capture.toString(),
     };
 
     this.captureTraceMap.set(capture, trace);
