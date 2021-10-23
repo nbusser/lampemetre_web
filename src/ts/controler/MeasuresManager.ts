@@ -58,11 +58,11 @@ export default class MeasuresManager {
       throw Error('Seul le mode triode est supporté');
     }
 
-    if (tube.captures.length < 2) {
+    if (tube.captures.size < 2) {
       throw Error('Le tube doit contenir au moins deux captures');
     }
 
-    const capturesSorted = [...tube.captures].sort((a: Capture, b: Capture) => {
+    const capturesSorted = [...tube.captures.values()].sort((a: Capture, b: Capture) => {
       if (a.uGrille < b.uGrille) {
         return -1;
       } if (a.uGrille > b.uGrille) {
