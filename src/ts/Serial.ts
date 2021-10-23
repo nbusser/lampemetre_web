@@ -92,9 +92,8 @@ async function acquireCurrentCathode(
 
     const bytesToRead = 128;
     const readBuffer = await readBytesSerialPackUint16(serialReader, bytesToRead, 15000);
-
     for (let i = 0; i < readBuffer.length; i += 1) {
-      const current = readBuffer[i] * 0.03125;
+      const current = (readBuffer[i] * (1 / 32));
       iCathodeSample.push(current);
     }
   } catch (error) {
