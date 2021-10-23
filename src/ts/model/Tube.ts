@@ -7,7 +7,7 @@ export default class Tube {
 
   public mode: TubeMode;
 
-  public captures: Capture[] = [];
+  public captures: Map<number, Capture> = new Map();
 
   private readonly onModeChange = new Signal<Tube, TubeMode>();
 
@@ -39,17 +39,26 @@ export default class Tube {
 
   createCapture(uAnode: number[], uGrille: number, values: number[]) {
     const createdCapture = new Capture(uAnode, uGrille, values);
-    this.captures.push(createdCapture);
+
+    if (this.captures.has(uGrille)) {
+      this.deleteCaptureByUgrid(uGrille);
+    }
+
+    this.captures.set(uGrille, createdCapture);
     this.onCreateCapture.trigger(this, createdCapture);
   }
 
   deleteCapture(capture: Capture) {
-    const index = this.captures.indexOf(capture);
-    if (index === -1) {
-      throw Error(`Capture ${capture.toString()} does not belong to tube ${this.name}`);
-    } else {
-      this.captures.splice(index, 1);
+    this.deleteCaptureByUgrid(capture.uGrille);
+  }
+
+  deleteCaptureByUgrid(uGrid: number) {
+    const toDelete = this.captures.get(uGrid);
+
+    if (toDelete === undefined) {
+      throw Error(`Capture for tension grid ${uGrid} does not belong to tube ${this.name}`);
     }
-    this.onRemoveCapture.trigger(this, capture);
+    this.captures.delete(uGrid);
+    this.onRemoveCapture.trigger(this, toDelete);
   }
 }
