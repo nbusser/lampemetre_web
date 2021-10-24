@@ -71,59 +71,39 @@ export default class MeasuresManager {
 
     const minGridCapture: Capture = capturesSorted[0];
 
-    const positionUMeasure = minGridCapture.uAnode.findIndex((uAnode2) => uAnode2 > uAnode);
-    if (positionUMeasure === -1) {
+    const getClosestIndex = (list: number[], refValue: number): number | null => {
+      const roughPosition = list.findIndex(
+        (value) => value > refValue,
+      );
+      if (roughPosition === -1) {
+        return null;
+      }
+      if (roughPosition === 0) {
+        return roughPosition;
+      }
+
+      return (
+        Math.abs(refValue - list[roughPosition])
+          < Math.abs(refValue - list[roughPosition - 1])
+      ) ? roughPosition : roughPosition - 1;
+    };
+
+    const closestUanodeIndex = getClosestIndex(minGridCapture.uAnode, uAnode);
+    if (closestUanodeIndex === null) {
       throw Error(`Aucun échantillon capturé au delà de la tension anode ${uAnode}V`);
-    }
-
-    const distance = (goal: number, uAnode2: number) => Math.abs(uAnode2 - goal);
-
-    let closestUanodeIndex: number;
-    if (positionUMeasure === 0) {
-      closestUanodeIndex = positionUMeasure;
-    } else {
-      closestUanodeIndex = (
-        distance(uAnode, minGridCapture.uAnode[positionUMeasure])
-          < distance(uAnode, minGridCapture.uAnode[positionUMeasure - 1])
-      ) ? positionUMeasure : positionUMeasure - 1;
     }
     const iMeasure = minGridCapture.iCathode[closestUanodeIndex];
 
     const iMeasureMin = iMeasure - 0.5;
-
-    const positionIMeasureMin = minGridCapture.iCathode.findIndex(
-      (iCathode) => iCathode > iMeasureMin,
-    );
-
-    if (positionIMeasureMin === -1) {
+    const closestImeasureMinIndex = getClosestIndex(minGridCapture.iCathode, iMeasureMin);
+    if (closestImeasureMinIndex === null) {
       throw Error(`Aucun échantillon ne dépasse le point de mesure minimum ${iMeasureMin}mA`);
-    }
-    let closestImeasureMinIndex: number;
-    if (positionIMeasureMin === 0) {
-      closestImeasureMinIndex = positionIMeasureMin;
-    } else {
-      closestImeasureMinIndex = (
-        distance(iMeasureMin, minGridCapture.iCathode[positionIMeasureMin])
-          < distance(iMeasureMin, minGridCapture.iCathode[positionIMeasureMin - 1])
-      ) ? positionIMeasureMin : positionIMeasureMin - 1;
     }
 
     const iMeasureMax = iMeasure + 0.5;
-
-    const positionIMeasureMax = minGridCapture.iCathode.findIndex(
-      (iCathode) => iCathode > iMeasureMax,
-    );
-    if (positionIMeasureMax === -1) {
+    const closestImeasureMaxIndex = getClosestIndex(minGridCapture.iCathode, iMeasureMax);
+    if (closestImeasureMaxIndex === null) {
       throw Error(`Aucun échantillon ne dépasse le point de mesure maximum ${iMeasureMax}mA`);
-    }
-    let closestImeasureMaxIndex: number;
-    if (positionIMeasureMax === 0) {
-      closestImeasureMaxIndex = positionIMeasureMax;
-    } else {
-      closestImeasureMaxIndex = (
-        distance(iMeasureMin, minGridCapture.iCathode[positionIMeasureMax])
-          < distance(iMeasureMin, minGridCapture.iCathode[positionIMeasureMax - 1])
-      ) ? positionIMeasureMax : positionIMeasureMax - 1;
     }
 
     const deltaU = minGridCapture.uAnode[closestImeasureMaxIndex]
@@ -132,8 +112,7 @@ export default class MeasuresManager {
     const deltaI = minGridCapture.iCathode[closestImeasureMaxIndex]
       - minGridCapture.iCathode[closestImeasureMinIndex];
 
-    const internalR = deltaU / deltaI;
-    const internalResistance = internalR;
+    const internalResistance = deltaU / deltaI;
 
     const lowGrid = capturesSorted[1];
 
@@ -142,20 +121,9 @@ export default class MeasuresManager {
       / (minGridCapture.uGrille - lowGrid.uGrille),
     );
 
-    const positionIMeasureLowGrid = lowGrid.iCathode.findIndex(
-      (iCathode) => iCathode > iMeasure,
-    );
-    if (positionIMeasureLowGrid === -1) {
-      throw Error(`Aucun échantillon ne dépasse le point de mesure maximum ${iMeasure}mA pour la capture ${lowGrid.toString()}`);
-    }
-    let closestImeasureLowGrid: number;
-    if (positionIMeasureLowGrid === 0) {
-      closestImeasureLowGrid = positionIMeasureLowGrid;
-    } else {
-      closestImeasureLowGrid = (
-        distance(iMeasure, lowGrid.iCathode[positionIMeasureLowGrid])
-          < distance(iMeasure, lowGrid.iCathode[positionIMeasureLowGrid - 1])
-      ) ? positionIMeasureLowGrid : positionIMeasureLowGrid - 1;
+    const closestImeasureLowGrid = getClosestIndex(lowGrid.iCathode, iMeasure);
+    if (closestImeasureLowGrid === null) {
+      throw Error(`Aucun échantillon ne dépasse le point de mesure ${iMeasure}mA pour la capture ${lowGrid.toString()}`);
     }
     const amplificationFactor = Math.abs(
       lowGrid.uAnode[closestImeasureLowGrid] - uAnode,
