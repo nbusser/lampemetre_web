@@ -61,11 +61,9 @@ export default class ViewMeasure {
     this.tableBody.innerHTML = (`
       <tr>
         <th></th>
-        <th>Internal TR</th>
-        <th>Pente I</th>
-        <th>Coef I</th>
-        <th>I ref y</th>
-        <th>U ref x</th>
+        <th>Résistance</th>
+        <th>Transductance</th>
+        <th>μ (coef)</th>
       </tr>
     `
     );

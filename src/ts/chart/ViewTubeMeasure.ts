@@ -35,17 +35,16 @@ export default class ViewTubeMeasure {
       <th>${this.tube.name}</th>
     </tr>
     `;
+    this.tableRowHtml.classList.add('measure_result_row');
 
     this.invalidReasonHtml.classList.add('warning_sign');
     this.invalidResultHtml.appendChild(this.invalidReasonHtml);
     this.updateInvalid('/');
 
     const initMeasureResults: MeasureResult = {
-      internalTR: -1,
-      slopeI: -1,
-      coefI: -1,
-      iRefy: -1,
-      uRefx: -1,
+      internalResistance: -1,
+      transductance: -1,
+      amplificationFactor: -1,
     };
     this.updateValid(initMeasureResults);
 
@@ -72,11 +71,9 @@ export default class ViewTubeMeasure {
   private updateValid(result: MeasureResult) {
     this.tableRowHtml.innerHTML = `
       <th>${this.tube.name}</th>
-      <td>${result.internalTR} kOhm</td>
-      <td>${result.slopeI} mA/V</td>
-      <td>${result.coefI} mA</td>
-      <td>${result.iRefy} mA</td>
-      <td>${result.uRefx} mA</td>
+      <td>${result.internalResistance.toFixed(1)} kOhm</td>
+      <td>${result.transductance.toFixed(1)} mA/V (mS)</td>
+      <td>${result.amplificationFactor.toFixed(1)}</td>
     `;
   }
 
@@ -87,7 +84,7 @@ export default class ViewTubeMeasure {
 
     this.tableRowHtml.appendChild(header);
 
-    for (let i = 0; i < 5; i += 1) {
+    for (let i = 0; i < 3; i += 1) {
       const td = document.createElement('td');
       td.style.textAlign = 'center';
       const warningSpan = document.createElement('span');
