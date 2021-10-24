@@ -65,3 +65,7 @@
     background-image: url('/img/warning.svg');
     background-size: contain;
 }
+
+.measure_result_row {
+    text-align: center;
+}
