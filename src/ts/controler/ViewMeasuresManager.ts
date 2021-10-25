@@ -15,11 +15,11 @@ export default class ViewMeasuresManager {
   private measuresMap: Map<number, ViewMeasure> = new Map();
 
   private colors: Stack<Color> = new Stack<Color>(
-    new Color(0, 0, 255, 1.0),
-    new Color(255, 0, 0, 1.0),
-    new Color(0, 255, 0, 1.0),
-    new Color(255, 255, 0, 1.0),
-    new Color(255, 0, 255, 1.0),
+    new Color(0, 0, 255, 1.0), // Blue
+    new Color(255, 0, 0, 1.0), // Red
+    new Color(0, 128, 21, 1.0), // Dark green
+    new Color(77, 0, 153, 1.0), // Purple
+    new Color(230, 191, 0, 1.0), // Orange
   );
 
   private defaultColor: Color = new Color(0, 0, 0, 1.0);
