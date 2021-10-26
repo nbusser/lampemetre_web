@@ -61,9 +61,9 @@ export default class MeasuresManager {
     }
 
     const capturesSorted = [...tube.captures.values()].sort((a: Capture, b: Capture) => {
-      if (a.uGrille < b.uGrille) {
+      if (a.uGrid < b.uGrid) {
         return -1;
-      } if (a.uGrille > b.uGrille) {
+      } if (a.uGrid > b.uGrid) {
         return 1;
       }
       return 0;

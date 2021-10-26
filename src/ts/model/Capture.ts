@@ -1,17 +1,17 @@
 export default class Capture {
   public uAnode: number[];
 
-  public uGrille: number;
+  public uGrid: number;
 
   public iCathode: number[];
 
-  constructor(uAnode: number[], uGrille: number, iCathode: number[]) {
+  constructor(uAnode: number[], uGrid: number, iCathode: number[]) {
     this.uAnode = uAnode;
-    this.uGrille = uGrille;
+    this.uGrid = uGrid;
     this.iCathode = iCathode;
   }
 
   toString(): string {
-    return `-${this.uGrille}V`;
+    return `-${this.uGrid}V`;
   }
 }

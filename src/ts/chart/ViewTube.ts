@@ -138,7 +138,7 @@ export default class ViewTube {
       const currentGrid = child.getAttribute('uGrid');
       if (currentGrid === null) {
         throw Error('Capture has no HTML field value indicating its uGrid');
-      } else if (Number.parseFloat(currentGrid) > capture.uGrille) {
+      } else if (Number.parseFloat(currentGrid) > capture.uGrid) {
         insertBefore = child;
         break;
       }
@@ -146,7 +146,7 @@ export default class ViewTube {
 
     const element: HTMLElement = document.createElement('li');
     element.classList.add('li_capture');
-    element.setAttribute('uGrid', capture.uGrille.toString());
+    element.setAttribute('uGrid', capture.uGrid.toString());
     this.tubeCapturesList.insertBefore(element, insertBefore);
 
     const divCapture: HTMLDivElement = document.createElement('div');

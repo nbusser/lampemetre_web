@@ -37,19 +37,19 @@ export default class Tube {
     this.OnModeChange.trigger(this, newMode);
   }
 
-  createCapture(uAnode: number[], uGrille: number, values: number[]) {
-    const createdCapture = new Capture(uAnode, uGrille, values);
+  createCapture(uAnode: number[], uGrid: number, values: number[]) {
+    const createdCapture = new Capture(uAnode, uGrid, values);
 
-    if (this.captures.has(uGrille)) {
-      this.deleteCaptureByUgrid(uGrille);
+    if (this.captures.has(uGrid)) {
+      this.deleteCaptureByUgrid(uGrid);
     }
 
-    this.captures.set(uGrille, createdCapture);
+    this.captures.set(uGrid, createdCapture);
     this.onCreateCapture.trigger(this, createdCapture);
   }
 
   deleteCapture(capture: Capture) {
-    this.deleteCaptureByUgrid(capture.uGrille);
+    this.deleteCaptureByUgrid(capture.uGrid);
   }
 
   deleteCaptureByUgrid(uGrid: number) {
