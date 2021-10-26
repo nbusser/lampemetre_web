@@ -1,4 +1,4 @@
-import MeasuresManager, { MeasureResult } from '../controler/MeasuresManager';
+import MeasuresManager from '../controler/MeasuresManager';
 import Capture from '../model/Capture';
 import Tube from '../model/Tube';
 import TubeMode from '../TubeMode';
@@ -41,13 +41,6 @@ export default class ViewTubeMeasure {
     this.invalidResultHtml.appendChild(this.invalidReasonHtml);
     this.updateInvalid('/');
 
-    const initMeasureResults: MeasureResult = {
-      internalResistance: -1,
-      transductance: -1,
-      amplificationFactor: -1,
-    };
-    this.updateValid(initMeasureResults);
-
     this.tube.OnCreateCapture.on((tube: Tube, capture: Capture) => this.updateDom());
     this.tube.OnRemoveCapture.on((tube: Tube, capture: Capture) => this.updateDom());
     this.tube.OnModeChange.on((tube: Tube, mode: TubeMode) => this.updateDom());
@@ -61,25 +54,50 @@ export default class ViewTubeMeasure {
 
   private updateDom() {
     try {
-      const result = this.measuresManager.performMeasure(
+      const { uGrid } = [...this.tube.captures.values()][0];
+
+      const internalResistance = this.measuresManager.computeInternalResistance(
         this.uAnode,
         this.tube,
-        [...this.tube.captures.values()][0].uGrid,
+        uGrid,
       );
-      this.updateValid(result);
-    } catch (Error) {
-      this.updateInvalid(Error.message);
+
+      const transductance = this.measuresManager.computeTransductance(
+        this.uAnode,
+        this.tube,
+        uGrid,
+      );
+
+      const amplificationFactor = this.measuresManager.computeAmplificationFactor(
+        this.uAnode,
+        this.tube,
+        uGrid,
+      );
+
+      this.tableRowHtml.innerHTML = `<th>${this.tube.name}</th>
+      <td>${internalResistance.toFixed(1)} kOhm</td>`;
+
+      if (typeof transductance === 'number') {
+        this.tableRowHtml.innerHTML += `<td>${transductance.toFixed(1)} mA/V (mS)</td>`;
+      } else {
+        this.tableRowHtml.innerHTML += this.getInvalidFieldHTML(transductance);
+      }
+
+      if (typeof amplificationFactor === 'number') {
+        this.tableRowHtml.innerHTML += `<td>${(<number>amplificationFactor).toFixed(1)} mA/V (mS)</td>`;
+      } else {
+        this.tableRowHtml.innerHTML += this.getInvalidFieldHTML(amplificationFactor);
+      }
+    } catch (e: any) {
+      console.error(e.message);
+      this.updateInvalid('Un comportement inatendu est survenu. Consultez la console pour plus d\'information');
     }
   }
 
-  private updateValid(result: MeasureResult) {
-    this.tableRowHtml.innerHTML = `
-      <th>${this.tube.name}</th>
-      <td>${result.internalResistance.toFixed(1)} kOhm</td>
-      <td>${result.transductance.toFixed(1)} mA/V (mS)</td>
-      <td>${result.amplificationFactor.toFixed(1)}</td>
-    `;
-  }
+  private getInvalidFieldHTML = (reason: string): string => `<td>
+    <span class="warning_sign" title="${reason}">
+    </span>
+    </td>`;
 
   private updateInvalid(reason: string) {
     this.tableRowHtml.innerHTML = '';

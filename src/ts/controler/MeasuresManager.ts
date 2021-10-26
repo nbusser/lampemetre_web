@@ -3,12 +3,6 @@ import Tube from '../model/Tube';
 import Signal from '../Signal';
 import TubeMode from '../TubeMode';
 
-export type MeasureResult = {
-  internalResistance: Number,
-  transductance: Number,
-  amplificationFactor: Number,
-};
-
 export default class MeasuresManager {
   private measuresMap: Map<number, boolean> = new Map();
 
@@ -47,7 +41,7 @@ export default class MeasuresManager {
     });
   }
 
-  public performMeasure(uAnode: number, tube: Tube, uGrid: number): MeasureResult {
+  private checkAndGetCapture(uAnode: number, tube: Tube, uGrid: number): Capture {
     if (!this.measureExists(uAnode)) {
       throw Error(`Aucune mesure pour la valeur ${uAnode}V`);
     }
@@ -61,31 +55,42 @@ export default class MeasuresManager {
       throw Error(`No capture ${uGrid}V for tube ${tube.name}`);
     }
 
-    const getClosestIndex = (list: number[], refValue: number): number | null => {
-      const roughPosition = list.findIndex(
-        (value) => value >= refValue,
-      );
-      if (roughPosition === -1) {
-        return null;
-      }
-      if (roughPosition === 0) {
-        return roughPosition;
-      }
+    return gridCapture;
+  }
 
-      return (
-        Math.abs(refValue - list[roughPosition])
-          < Math.abs(refValue - list[roughPosition - 1])
-      ) ? roughPosition : roughPosition - 1;
-    };
+  private getClosestIndex = (list: number[], refValue: number): number | null => {
+    const roughPosition = list.findIndex(
+      (value) => value >= refValue,
+    );
+    if (roughPosition === -1) {
+      return null;
+    }
+    if (roughPosition === 0) {
+      return roughPosition;
+    }
 
-    let closestUanodeIndex = getClosestIndex(gridCapture.uAnode, uAnode);
+    return (
+      Math.abs(refValue - list[roughPosition])
+        < Math.abs(refValue - list[roughPosition - 1])
+    ) ? roughPosition : roughPosition - 1;
+  };
+
+  private getClosestUanode = (capture: Capture, uAnode: number) => {
+    let closestUanodeIndex = this.getClosestIndex(capture.uAnode, uAnode);
     if (closestUanodeIndex === null) {
       throw Error(`Aucun échantillon capturé au delà de la tension anode ${uAnode}V`);
     } else if (closestUanodeIndex === 0) {
       closestUanodeIndex += 1;
-    } else if (closestUanodeIndex === gridCapture.uAnode.length - 1) {
+    } else if (closestUanodeIndex === capture.uAnode.length - 1) {
       closestUanodeIndex -= 1;
     }
+    return closestUanodeIndex;
+  };
+
+  public computeInternalResistance(uAnode: number, tube:Tube, uGrid: number): number {
+    const gridCapture = this.checkAndGetCapture(uAnode, tube, uGrid);
+
+    const closestUanodeIndex = this.getClosestUanode(gridCapture, uAnode);
 
     const lowerMean = (
       (gridCapture.uAnode[closestUanodeIndex] - gridCapture.uAnode[closestUanodeIndex - 1])
@@ -101,14 +106,10 @@ export default class MeasuresManager {
         - gridCapture.iCathode[closestUanodeIndex]
       )
     );
-    const internalResistance = (lowerMean + upperMean) / 2;
+    return (lowerMean + upperMean) / 2;
+  }
 
-    // Transductance and amplification factor calculation require at least 2 captures
-
-    if (tube.captures.size < 2) {
-      throw Error('Le tube doit contenir au moins deux captures');
-    }
-
+  private getSortedCaptures = (tube: Tube) => {
     const capturesSorted = [...tube.captures.values()].sort((a: Capture, b: Capture) => {
       if (a.uGrid < b.uGrid) {
         return -1;
@@ -117,7 +118,21 @@ export default class MeasuresManager {
       }
       return 0;
     });
+    return capturesSorted;
+  };
 
+  public computeTransductance(uAnode: number, tube: Tube, uGrid: number): number | string {
+    const gridCapture = this.checkAndGetCapture(uAnode, tube, uGrid);
+
+    // Transductance and amplification factor calculation require at least 2 captures
+
+    if (tube.captures.size < 2) {
+      return 'Le tube doit contenir au moins deux captures';
+    }
+
+    const capturesSorted = this.getSortedCaptures(tube);
+
+    const closestUanodeIndex = this.getClosestUanode(gridCapture, uAnode);
     const iMeasure = gridCapture.iCathode[closestUanodeIndex];
 
     // Transductance calculation is always possible
@@ -135,18 +150,36 @@ export default class MeasuresManager {
       transductance = calculateTransductance(capturesSorted[captureIndex + 1]);
     }
 
+    return transductance;
+  }
+
+  public computeAmplificationFactor(uAnode: number, tube: Tube, uGrid: number): number | string {
+    const gridCapture = this.checkAndGetCapture(uAnode, tube, uGrid);
+
+    // Transductance and amplification factor calculation require at least 2 captures
+
+    if (tube.captures.size < 2) {
+      return 'Le tube doit contenir au moins deux captures';
+    }
+
+    const capturesSorted = this.getSortedCaptures(tube);
+
+    const closestUanodeIndex = this.getClosestUanode(gridCapture, uAnode);
+    const iMeasure = gridCapture.iCathode[closestUanodeIndex];
+
     // Amplification factor calculation is not always possible
 
     const calculateAmplificationFactor = (relativeCapture: Capture): number | null => {
-      const closestImeasureLowGrid = getClosestIndex(relativeCapture.iCathode, iMeasure);
-      if (closestImeasureLowGrid === null) {
+      const closestImeasure = this.getClosestIndex(relativeCapture.iCathode, iMeasure);
+      if (closestImeasure === null) {
         return null;
       }
       return Math.abs(
-        relativeCapture.uAnode[closestImeasureLowGrid] - uAnode,
+        relativeCapture.uAnode[closestImeasure] - uAnode,
       );
     };
 
+    const captureIndex = <number> capturesSorted.findIndex((cap) => cap === gridCapture);
     let amplificationFactor = null;
     if (captureIndex !== 0) {
       amplificationFactor = calculateAmplificationFactor(capturesSorted[captureIndex - 1]);
@@ -155,14 +188,9 @@ export default class MeasuresManager {
       amplificationFactor = calculateAmplificationFactor(capturesSorted[captureIndex + 1]);
     }
 
-    if (amplificationFactor === null) {
-      throw Error(`Aucun échantillon ne dépasse le point de mesure ${iMeasure}mA parmi les captures secondaires`);
+    if (amplificationFactor !== null) {
+      return amplificationFactor;
     }
-
-    return {
-      internalResistance,
-      transductance,
-      amplificationFactor,
-    };
+    return 'Impossible de calculer le facteur d\'amplification avec ces captures';
   }
 }
