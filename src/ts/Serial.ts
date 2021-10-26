@@ -146,14 +146,14 @@ export default async function performCapture(
   const serialWriter = (<WritableStream<Uint8Array>>serialConnection.writable).getWriter();
 
   let tensionsAnode;
-  let currentsCathode;
+  let currentsCathodeRaw;
   try {
     tensionsAnode = await acquireTensionsAnode(serialReader, serialWriter);
 
     const samplingMode = 32; // Always use 32mA sampling mode since we do not have to compute scales
     await writeByteSerial(serialWriter, samplingMode);
 
-    currentsCathode = await acquireCurrentCathode(serialReader, serialWriter, uGrid);
+    currentsCathodeRaw = await acquireCurrentCathode(serialReader, serialWriter, uGrid);
 
     await writeByteSerial(serialWriter, 105);
   } finally {
@@ -164,6 +164,15 @@ export default async function performCapture(
 
     await serialConnection.close();
   }
+
+  // Sliding window average
+  const currentsCathode = [currentsCathodeRaw[0]];
+  for (let i = 1; i < currentsCathodeRaw.length - 1; i += 1) {
+    currentsCathode.push(
+      (currentsCathodeRaw[i - 1] + currentsCathodeRaw[i] + currentsCathodeRaw[i + 1]) / 3,
+    );
+  }
+  currentsCathode.push(currentsCathodeRaw[currentsCathodeRaw.length - 1]);
 
   return { tensionsAnode, currentsCathode };
 }
