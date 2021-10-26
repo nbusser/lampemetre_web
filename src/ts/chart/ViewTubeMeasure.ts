@@ -102,26 +102,15 @@ export default class ViewTubeMeasure {
     }
   }
 
-  private getInvalidFieldHTML = (reason: string): string => `<td>
-    <span class="warning_sign" title="${reason}">
-    </span>
-    </td>`;
-
   private updateInvalid(reason: string) {
-    this.tableRowHtml.innerHTML = '';
-    const header = document.createElement('th');
-    header.textContent = this.tube.name;
-
-    this.tableRowHtml.appendChild(header);
-
+    this.tableRowHtml.innerHTML = `<th>${this.tube.name}</th>`;
     for (let i = 0; i < 3; i += 1) {
-      const td = document.createElement('td');
-      td.style.textAlign = 'center';
-      const warningSpan = document.createElement('span');
-      warningSpan.title = reason;
-      warningSpan.classList.add('warning_sign');
-      td.appendChild(warningSpan);
-      this.tableRowHtml.appendChild(td);
+      this.tableRowHtml.innerHTML += this.getInvalidFieldHTML(reason);
     }
   }
+
+  private getInvalidFieldHTML = (reason: string): string => `<td>
+  <span class="warning_sign" title="${reason}">
+  </span>
+  </td>`;
 }
