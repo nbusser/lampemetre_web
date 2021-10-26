@@ -69,3 +69,12 @@
 .measure_result_row {
     text-align: center;
 }
+
+.radio_select_capture {
+    display: flex;
+}
+
+.capture_list {
+    list-style: none;
+    padding-left: 0;
+}

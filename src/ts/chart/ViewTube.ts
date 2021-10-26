@@ -151,28 +151,19 @@ export default class ViewTube {
 
     const divCapture: HTMLDivElement = document.createElement('div');
     divCapture.classList.add('tube_capture_button_inline');
-    divCapture.classList.add('div_listed_capture');
+    divCapture.innerHTML = `<label class="radio_select_capture">
+    <input type="radio" name="selectedCapture${this.tubesManager.getTubeId(this.tube)}" value=${capture.toString()}>
+    <div class="tube_capture_button_inline">
+      <span class="capture_value">${capture.toString()}</span>
+      <button class="btn_tube_capture btn_capture btn_remove_capture">-</button>
+    </div>
+    </label>`;
+    // Radio button
+    divCapture.children[0].children[0].addEventListener('change', () => { this.tube.changeSelectedCapture(capture); });
+    // Delete button
+    divCapture.children[0].children[1].children[1].addEventListener('click', () => this.tube.deleteCapture(capture));
+
     element.appendChild(divCapture);
-
-    const text: HTMLElement = document.createElement('span');
-    text.textContent = capture.toString();
-    text.className = 'capture_value';
-    divCapture.appendChild(text);
-
-    const deleteButton: HTMLButtonElement = document.createElement('button');
-    deleteButton.classList.add('btn_tube_capture');
-    deleteButton.classList.add('btn_capture');
-    deleteButton.classList.add('btn_remove_capture');
-    deleteButton.textContent = '-';
-    deleteButton.addEventListener('click', () => this.tube.deleteCapture(capture));
-    divCapture.appendChild(deleteButton);
-
-    const radioButton: HTMLInputElement = document.createElement('input');
-    radioButton.type = 'radio';
-    radioButton.name = `selectedCapture${this.tubesManager.getTubeId(this.tube)}`;
-    radioButton.value = capture.toString();
-    radioButton.addEventListener('change', () => { this.tube.changeSelectedCapture(capture); });
-    divCapture.appendChild(radioButton);
 
     this.capturesMap.set(capture, element);
   }
