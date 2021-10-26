@@ -138,7 +138,7 @@ export type CaptureData = {
 };
 
 export default async function performCapture(
-  iCathodeMax: number, uGrid: number,
+  uGrid: number,
 ): Promise<CaptureData> {
   const serialConnection: SerialPort = await getSerialConnection();
 
@@ -150,7 +150,7 @@ export default async function performCapture(
   try {
     tensionsAnode = await acquireTensionsAnode(serialReader, serialWriter);
 
-    const samplingMode = iCathodeMax <= 32 ? 32 : 50;
+    const samplingMode = 32; // Always use 32mA sampling mode since we do not have to compute scales
     await writeByteSerial(serialWriter, samplingMode);
 
     currentsCathode = await acquireCurrentCathode(serialReader, serialWriter, uGrid);
