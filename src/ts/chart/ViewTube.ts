@@ -165,8 +165,14 @@ export default class ViewTube {
     deleteButton.classList.add('btn_remove_capture');
     deleteButton.textContent = '-';
     deleteButton.addEventListener('click', () => this.tube.deleteCapture(capture));
-
     divCapture.appendChild(deleteButton);
+
+    const radioButton: HTMLInputElement = document.createElement('input');
+    radioButton.type = 'radio';
+    radioButton.name = `selectedCapture${this.tubesManager.getTubeId(this.tube)}`;
+    radioButton.value = capture.toString();
+    radioButton.addEventListener('change', () => { this.tube.changeSelectedCapture(capture); });
+    divCapture.appendChild(radioButton);
 
     this.capturesMap.set(capture, element);
   }
