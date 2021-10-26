@@ -44,6 +44,7 @@ export default class ViewTubeMeasure {
     this.tube.OnCreateCapture.on((tube: Tube, capture: Capture) => this.updateDom());
     this.tube.OnRemoveCapture.on((tube: Tube, capture: Capture) => this.updateDom());
     this.tube.OnModeChange.on((tube: Tube, mode: TubeMode) => this.updateDom());
+    this.tube.OnSelectedCaptureChange.on((tube: Tube, capture: Capture | null) => this.updateDom());
 
     this.updateDom();
   }
@@ -55,9 +56,13 @@ export default class ViewTubeMeasure {
   private updateDom() {
     this.tableRowHtml.innerHTML = `<th>${this.tube.name}</th>`;
 
-    let uGrid = -1;
+    let uGrid = null;
     if (this.tube.captures.size !== 0) {
-      uGrid = [...this.tube.captures.values()][0].uGrid;
+      if (this.tube.selectedCapture === null) {
+        this.updateInvalid('Selectionnez une capture en cliquant dessus dans le panneau Tubes');
+        return;
+      }
+      uGrid = this.tube.selectedCapture.uGrid;
     }
 
     try {

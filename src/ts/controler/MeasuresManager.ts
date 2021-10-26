@@ -41,7 +41,11 @@ export default class MeasuresManager {
     });
   }
 
-  private checkAndGetCapture(uAnode: number, tube: Tube, uGrid: number): Capture {
+  private checkAndGetCapture(uAnode: number, tube: Tube, uGrid: number | null): Capture {
+    if (uGrid === null) {
+      throw Error('uGrid is not supposed to be null at this point');
+    }
+
     if (!this.measureExists(uAnode)) {
       throw Error(`Aucune mesure pour la valeur ${uAnode}V`);
     }
@@ -87,7 +91,8 @@ export default class MeasuresManager {
     return closestUanodeIndex;
   };
 
-  public computeInternalResistance(uAnode: number, tube:Tube, uGrid: number): number | string {
+  public computeInternalResistance(uAnode: number, tube:Tube, uGrid: number | null)
+    : number | string {
     if (tube.captures.size < 1) {
       return 'Le tube doit contenir au moins une capture';
     }
@@ -125,7 +130,7 @@ export default class MeasuresManager {
     return capturesSorted;
   };
 
-  public computeTransductance(uAnode: number, tube: Tube, uGrid: number): number | string {
+  public computeTransductance(uAnode: number, tube: Tube, uGrid: number | null): number | string {
     // Transductance and amplification factor calculation require at least 2 captures
     if (tube.captures.size < 2) {
       return 'Le tube doit contenir au moins deux captures';
@@ -156,7 +161,8 @@ export default class MeasuresManager {
     return transductance;
   }
 
-  public computeAmplificationFactor(uAnode: number, tube: Tube, uGrid: number): number | string {
+  public computeAmplificationFactor(uAnode: number, tube: Tube, uGrid: number | null)
+    : number | string {
     // Transductance and amplification factor calculation require at least 2 captures
     if (tube.captures.size < 2) {
       return 'Le tube doit contenir au moins deux captures';
