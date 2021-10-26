@@ -41,17 +41,17 @@ export default class MeasuresManager {
     });
   }
 
-  private checkAndGetCapture(uAnode: number, tube: Tube, uGrid: number | null): Capture {
+  private checkAndGetCapture(uAnode: number, tube: Tube, uGrid: number | null): Capture | string {
     if (uGrid === null) {
       throw Error('uGrid is not supposed to be null at this point');
     }
 
     if (!this.measureExists(uAnode)) {
-      throw Error(`Aucune mesure pour la valeur ${uAnode}V`);
+      throw Error(`No measure for tension value ${uAnode}V`);
     }
 
     if (tube.mode !== TubeMode.Triode) {
-      throw Error('Seul le mode triode est supporté');
+      return 'Seul le mode triode est supporté';
     }
 
     const gridCapture = tube.captures.get(uGrid);
@@ -98,6 +98,9 @@ export default class MeasuresManager {
     }
 
     const gridCapture = this.checkAndGetCapture(uAnode, tube, uGrid);
+    if (typeof gridCapture === 'string') {
+      return gridCapture;
+    }
 
     const closestUanodeIndex = this.getClosestUanode(gridCapture, uAnode);
 
@@ -137,6 +140,9 @@ export default class MeasuresManager {
     }
 
     const gridCapture = this.checkAndGetCapture(uAnode, tube, uGrid);
+    if (typeof gridCapture === 'string') {
+      return gridCapture;
+    }
 
     const capturesSorted = this.getSortedCaptures(tube);
 
@@ -169,6 +175,9 @@ export default class MeasuresManager {
     }
 
     const gridCapture = this.checkAndGetCapture(uAnode, tube, uGrid);
+    if (typeof gridCapture === 'string') {
+      return gridCapture;
+    }
 
     // Transductance and amplification factor calculation require at least 2 captures
 
