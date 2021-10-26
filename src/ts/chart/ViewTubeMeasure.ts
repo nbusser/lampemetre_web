@@ -61,7 +61,11 @@ export default class ViewTubeMeasure {
 
   private updateDom() {
     try {
-      const result = this.measuresManager.performMeasure(this.uAnode, this.tube);
+      const result = this.measuresManager.performMeasure(
+        this.uAnode,
+        this.tube,
+        [...this.tube.captures.values()][0].uGrid,
+      );
       this.updateValid(result);
     } catch (Error) {
       this.updateInvalid(Error.message);

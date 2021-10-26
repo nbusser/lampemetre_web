@@ -47,7 +47,7 @@ export default class MeasuresManager {
     });
   }
 
-  public performMeasure(uAnode: number, tube: Tube): MeasureResult {
+  public performMeasure(uAnode: number, tube: Tube, uGrid: number): MeasureResult {
     if (!this.measureExists(uAnode)) {
       throw Error(`Aucune mesure pour la valeur ${uAnode}V`);
     }
@@ -56,20 +56,10 @@ export default class MeasuresManager {
       throw Error('Seul le mode triode est supporté');
     }
 
-    if (tube.captures.size < 2) {
-      throw Error('Le tube doit contenir au moins deux captures');
+    const gridCapture = tube.captures.get(uGrid);
+    if (gridCapture === undefined) {
+      throw Error(`No capture ${uGrid}V for tube ${tube.name}`);
     }
-
-    const capturesSorted = [...tube.captures.values()].sort((a: Capture, b: Capture) => {
-      if (a.uGrid < b.uGrid) {
-        return -1;
-      } if (a.uGrid > b.uGrid) {
-        return 1;
-      }
-      return 0;
-    });
-
-    const minGridCapture: Capture = capturesSorted[0];
 
     const getClosestIndex = (list: number[], refValue: number): number | null => {
       const roughPosition = list.findIndex(
@@ -88,46 +78,86 @@ export default class MeasuresManager {
       ) ? roughPosition : roughPosition - 1;
     };
 
-    let closestUanodeIndex = getClosestIndex(minGridCapture.uAnode, uAnode);
+    let closestUanodeIndex = getClosestIndex(gridCapture.uAnode, uAnode);
     if (closestUanodeIndex === null) {
       throw Error(`Aucun échantillon capturé au delà de la tension anode ${uAnode}V`);
     } else if (closestUanodeIndex === 0) {
       closestUanodeIndex += 1;
-    } else if (closestUanodeIndex === minGridCapture.uAnode.length - 1) {
+    } else if (closestUanodeIndex === gridCapture.uAnode.length - 1) {
       closestUanodeIndex -= 1;
     }
 
     const lowerMean = (
-      (minGridCapture.uAnode[closestUanodeIndex] - minGridCapture.uAnode[closestUanodeIndex - 1])
+      (gridCapture.uAnode[closestUanodeIndex] - gridCapture.uAnode[closestUanodeIndex - 1])
       / (
-        minGridCapture.iCathode[closestUanodeIndex]
-        - minGridCapture.iCathode[closestUanodeIndex - 1]
+        gridCapture.iCathode[closestUanodeIndex]
+        - gridCapture.iCathode[closestUanodeIndex - 1]
       )
     );
     const upperMean = (
-      (minGridCapture.uAnode[closestUanodeIndex + 1] - minGridCapture.uAnode[closestUanodeIndex])
+      (gridCapture.uAnode[closestUanodeIndex + 1] - gridCapture.uAnode[closestUanodeIndex])
       / (
-        minGridCapture.iCathode[closestUanodeIndex + 1]
-        - minGridCapture.iCathode[closestUanodeIndex]
+        gridCapture.iCathode[closestUanodeIndex + 1]
+        - gridCapture.iCathode[closestUanodeIndex]
       )
     );
     const internalResistance = (lowerMean + upperMean) / 2;
 
-    const iMeasure = minGridCapture.iCathode[closestUanodeIndex];
+    // Transductance and amplification factor calculation require at least 2 captures
 
-    const lowGrid = capturesSorted[1];
-    const transductance = Math.abs(
-      (iMeasure - lowGrid.iCathode[closestUanodeIndex])
-      / (minGridCapture.uGrid - lowGrid.uGrid),
-    );
-
-    const closestImeasureLowGrid = getClosestIndex(lowGrid.iCathode, iMeasure);
-    if (closestImeasureLowGrid === null) {
-      throw Error(`Aucun échantillon ne dépasse le point de mesure ${iMeasure}mA pour la capture ${lowGrid.toString()}`);
+    if (tube.captures.size < 2) {
+      throw Error('Le tube doit contenir au moins deux captures');
     }
-    const amplificationFactor = Math.abs(
-      lowGrid.uAnode[closestImeasureLowGrid] - uAnode,
+
+    const capturesSorted = [...tube.captures.values()].sort((a: Capture, b: Capture) => {
+      if (a.uGrid < b.uGrid) {
+        return -1;
+      } if (a.uGrid > b.uGrid) {
+        return 1;
+      }
+      return 0;
+    });
+
+    const iMeasure = gridCapture.iCathode[closestUanodeIndex];
+
+    // Transductance calculation is always possible
+
+    const calculateTransductance = (relativeCapture: Capture): number => Math.abs(
+      (iMeasure - relativeCapture.iCathode[<number> closestUanodeIndex])
+        / (gridCapture.uGrid - relativeCapture.uGrid),
     );
+
+    const captureIndex = <number> capturesSorted.findIndex((cap) => cap === gridCapture);
+    let transductance;
+    if (captureIndex !== 0) {
+      transductance = calculateTransductance(capturesSorted[captureIndex - 1]);
+    } else {
+      transductance = calculateTransductance(capturesSorted[captureIndex + 1]);
+    }
+
+    // Amplification factor calculation is not always possible
+
+    const calculateAmplificationFactor = (relativeCapture: Capture): number | null => {
+      const closestImeasureLowGrid = getClosestIndex(relativeCapture.iCathode, iMeasure);
+      if (closestImeasureLowGrid === null) {
+        return null;
+      }
+      return Math.abs(
+        relativeCapture.uAnode[closestImeasureLowGrid] - uAnode,
+      );
+    };
+
+    let amplificationFactor = null;
+    if (captureIndex !== 0) {
+      amplificationFactor = calculateAmplificationFactor(capturesSorted[captureIndex - 1]);
+    }
+    if (amplificationFactor === null) {
+      amplificationFactor = calculateAmplificationFactor(capturesSorted[captureIndex + 1]);
+    }
+
+    if (amplificationFactor === null) {
+      throw Error(`Aucun échantillon ne dépasse le point de mesure ${iMeasure}mA parmi les captures secondaires`);
+    }
 
     return {
       internalResistance,
