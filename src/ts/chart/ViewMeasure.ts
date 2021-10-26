@@ -52,6 +52,7 @@ export default class ViewMeasure {
 
     this.htmlElement = document.createElement('div');
     const title = document.createElement('h2');
+    title.classList.add('measure_title');
     title.style.textAlign = 'center';
     title.textContent = `${uAnodeMeasure}V`;
     title.style.color = this.color.toString();
