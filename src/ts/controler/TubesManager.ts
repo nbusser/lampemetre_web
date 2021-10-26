@@ -5,6 +5,10 @@ import TubeMode from '../TubeMode';
 export default class TubesManager {
   private tubesList: Array<Tube> = [];
 
+  private nextTubeId = 0;
+
+  private tubeToTubeId: Map<Tube, number> = new Map();
+
   private readonly onCreateTube = new Signal<TubesManager, Tube>();
 
   private readonly onRemoveTube = new Signal<TubesManager, Tube>();
@@ -21,6 +25,9 @@ export default class TubesManager {
     const tube = new Tube(name, mode);
     this.tubesList.push(tube);
     this.onCreateTube.trigger(this, tube);
+
+    this.tubeToTubeId.set(tube, this.nextTubeId);
+    this.nextTubeId += 1;
   }
 
   public getTubes(): Array<Tube> {
@@ -29,6 +36,7 @@ export default class TubesManager {
 
   public removeTube(tube: Tube) {
     this.tubesList.splice(this.tubesList.indexOf(tube), 1);
+    this.tubeToTubeId.delete(tube);
     this.onRemoveTube.trigger(this, tube);
   }
 
@@ -36,5 +44,12 @@ export default class TubesManager {
     while (this.tubesList.length !== 0) {
       this.removeTube(this.tubesList[0]);
     }
+  }
+
+  public getTubeId(tube: Tube) {
+    if (!this.tubeToTubeId.has(tube)) {
+      throw Error(`No such tube ${tube.name}`);
+    }
+    return this.tubeToTubeId.get(tube);
   }
 }
