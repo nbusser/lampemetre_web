@@ -53,9 +53,14 @@ export default class ViewTubeMeasure {
   }
 
   private updateDom() {
-    try {
-      const { uGrid } = [...this.tube.captures.values()][0];
+    this.tableRowHtml.innerHTML = `<th>${this.tube.name}</th>`;
 
+    let uGrid = -1;
+    if (this.tube.captures.size !== 0) {
+      uGrid = [...this.tube.captures.values()][0].uGrid;
+    }
+
+    try {
       const internalResistance = this.measuresManager.computeInternalResistance(
         this.uAnode,
         this.tube,
@@ -74,8 +79,11 @@ export default class ViewTubeMeasure {
         uGrid,
       );
 
-      this.tableRowHtml.innerHTML = `<th>${this.tube.name}</th>
-      <td>${internalResistance.toFixed(1)} kOhm</td>`;
+      if (typeof internalResistance === 'number') {
+        this.tableRowHtml.innerHTML += `<td>${internalResistance.toFixed(1)} kOhm</td>`;
+      } else {
+        this.tableRowHtml.innerHTML += this.getInvalidFieldHTML(internalResistance);
+      }
 
       if (typeof transductance === 'number') {
         this.tableRowHtml.innerHTML += `<td>${transductance.toFixed(1)} mA/V (mS)</td>`;

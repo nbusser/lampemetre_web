@@ -87,7 +87,11 @@ export default class MeasuresManager {
     return closestUanodeIndex;
   };
 
-  public computeInternalResistance(uAnode: number, tube:Tube, uGrid: number): number {
+  public computeInternalResistance(uAnode: number, tube:Tube, uGrid: number): number | string {
+    if (tube.captures.size < 1) {
+      return 'Le tube doit contenir au moins une capture';
+    }
+
     const gridCapture = this.checkAndGetCapture(uAnode, tube, uGrid);
 
     const closestUanodeIndex = this.getClosestUanode(gridCapture, uAnode);
@@ -122,13 +126,12 @@ export default class MeasuresManager {
   };
 
   public computeTransductance(uAnode: number, tube: Tube, uGrid: number): number | string {
-    const gridCapture = this.checkAndGetCapture(uAnode, tube, uGrid);
-
     // Transductance and amplification factor calculation require at least 2 captures
-
     if (tube.captures.size < 2) {
       return 'Le tube doit contenir au moins deux captures';
     }
+
+    const gridCapture = this.checkAndGetCapture(uAnode, tube, uGrid);
 
     const capturesSorted = this.getSortedCaptures(tube);
 
@@ -154,6 +157,11 @@ export default class MeasuresManager {
   }
 
   public computeAmplificationFactor(uAnode: number, tube: Tube, uGrid: number): number | string {
+    // Transductance and amplification factor calculation require at least 2 captures
+    if (tube.captures.size < 2) {
+      return 'Le tube doit contenir au moins deux captures';
+    }
+
     const gridCapture = this.checkAndGetCapture(uAnode, tube, uGrid);
 
     // Transductance and amplification factor calculation require at least 2 captures
