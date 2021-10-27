@@ -18,6 +18,10 @@ export default class MeasuresManager {
     return this.onRemoveMeasure;
   }
 
+  public getMeasures(): number[] {
+    return [...this.measuresMap.keys()];
+  }
+
   public createMeasure(uAnode: number) {
     if (this.measuresMap.has(uAnode)) {
       throw Error(`A measure for ${uAnode} has already been created`);
