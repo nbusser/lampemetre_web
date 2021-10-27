@@ -194,11 +194,13 @@ export default class MeasuresManager {
 
     const calculateAmplificationFactor = (relativeCapture: Capture): number | null => {
       const closestImeasure = this.getClosestIndex(relativeCapture.iCathode, iMeasure);
+
       if (closestImeasure === null) {
         return null;
       }
       return Math.abs(
-        relativeCapture.uAnode[closestImeasure] - uAnode,
+        (relativeCapture.uAnode[closestImeasure] - uAnode)
+        / (gridCapture.uGrid - relativeCapture.uGrid),
       );
     };
 
