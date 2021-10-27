@@ -78,7 +78,9 @@ export default class ViewMeasuresManager {
 
     this.measuresMap.delete(uAnodeMeasure);
 
-    this.colors.push(viewMeasure.getColor());
+    if (viewMeasure.getColor() !== this.defaultColor) {
+      this.colors.push(viewMeasure.getColor());
+    }
 
     viewMeasure.removeDiv();
 

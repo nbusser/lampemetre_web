@@ -74,7 +74,9 @@ export default class ViewTubesManager {
   private removeViewTube(tube: Tube) {
     const viewTube: ViewTube = <ViewTube> this.tubesList.get(tube);
     this.tubesList.delete(viewTube.tube);
-    this.tubeColors.push(viewTube.getColor());
+    if (viewTube.getColor() !== this.defaultColor) {
+      this.tubeColors.push(viewTube.getColor());
+    }
 
     viewTube.deleteViewTube();
 
