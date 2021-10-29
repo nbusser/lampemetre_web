@@ -97,7 +97,7 @@ export default class ViewTubeMeasure {
       }
 
       if (typeof amplificationFactor === 'number') {
-        this.tableRowHtml.innerHTML += `<td>${(<number>amplificationFactor).toFixed(1)} mA/V (mS)</td>`;
+        this.tableRowHtml.innerHTML += `<td>${(<number>amplificationFactor).toFixed(1)}</td>`;
       } else {
         this.tableRowHtml.innerHTML += this.getInvalidFieldHTML(amplificationFactor);
       }
