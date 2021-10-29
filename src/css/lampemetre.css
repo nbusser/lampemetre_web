@@ -1,11 +1,22 @@
+body {
+    background-color: white;
+}
+
 #params {
     display: flex;
 }
 
 #measures {
     margin-top: 1.5em;
-    display: flex;
-    gap: 2em;
+    display: block;
+}
+
+.measure {
+    display: inline-block;
+}
+
+.measure_title {
+    margin: 0 0 0.2em 0;
 }
 
  #tubes {
@@ -19,7 +30,6 @@
 #ul_tubes {
     gap: 1em;
     display: flex;
-    /* align-items: flex-start; */
     flex-wrap: wrap;
 }
 
@@ -93,14 +103,11 @@ th {
 }
 
 table {
+    display: inline;
     border-collapse: collapse;
 }
 
 tbody {
     box-shadow: 0 0 0 1px black;
     border-radius: 5px;
-}
-
-.measure_title {
-    margin: 0 0 0.2em 0;
 }

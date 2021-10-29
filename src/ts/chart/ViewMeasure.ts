@@ -51,6 +51,7 @@ export default class ViewMeasure {
     };
 
     this.htmlElement = document.createElement('div');
+    this.htmlElement.classList.add('measure');
     const title = document.createElement('h2');
     title.classList.add('measure_title');
     title.style.textAlign = 'center';
