@@ -20,6 +20,8 @@ export default class ViewTube {
 
   private tubeCapturesList: HTMLUListElement;
 
+  private slider: HTMLInputElement;
+
   constructor(tube: Tube, color: Color, tubesManager: TubesManager) {
     this.tubesManager = tubesManager;
 
@@ -114,7 +116,26 @@ export default class ViewTube {
     this.tube.captures.forEach((capture) => {
       this.addCapture(capture);
     });
+
+    const sliderDiv = document.createElement('div');
+    sliderDiv.className = 'div_slider';
+    this.tubeLi.appendChild(sliderDiv);
+
+    const slider = document.createElement('input');
+    slider.classList.add('slider');
+    slider.type = 'range';
+    slider.min = '0';
+    slider.max = '10';
+    slider.value = '4';
+    sliderDiv.appendChild(slider);
+    this.slider = slider;
+    this.updateSlider();
+
     ViewTube.tubesUlHtml.appendChild(this.tubeLi);
+  }
+
+  private updateSlider() {
+    this.slider.disabled = this.capturesMap.size > 0;
   }
 
   private async createNewCapture() {
@@ -130,10 +151,7 @@ export default class ViewTube {
       const parsed = Number.parseFloat(prompted);
       if (!Number.isNaN(parsed)) {
         const uGrid = Math.abs(parsed);
-        const slidingFactor: number = Number.parseInt(
-          (<HTMLInputElement>document.getElementById('slidingFactor')).value, 10,
-        );
-        const result = await performCapture(uGrid, slidingFactor);
+        const result = await performCapture(uGrid, Number.parseInt(this.slider.value, 10));
         this.tube.createCapture(
           result.tensionsAnode,
           uGrid,
@@ -179,6 +197,8 @@ export default class ViewTube {
     element.appendChild(divCapture);
 
     this.capturesMap.set(capture, element);
+
+    this.updateSlider();
   }
 
   private removeCapture(capture: Capture) {
@@ -191,6 +211,8 @@ export default class ViewTube {
     this.tubeCapturesList.removeChild(captureHtml);
 
     this.capturesMap.delete(capture);
+
+    this.updateSlider();
   }
 
   getHtml(): HTMLElement {
