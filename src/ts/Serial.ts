@@ -166,13 +166,18 @@ export default async function performCapture(
   }
 
   // Sliding window average
-  const currentsCathode = [currentsCathodeRaw[0]];
-  for (let i = 1; i < currentsCathodeRaw.length - 1; i += 1) {
+  const k = 4;
+  const currentsCathode = [];
+  for (let i = 0; i < currentsCathodeRaw.length - k; i += 1) {
+    const a = Math.max(0, i - k);
+    const b = Math.min(currentsCathodeRaw.length - 1, i + k);
+
+    const avg = currentsCathodeRaw.slice(a, b + 1)
+      .reduce((prev, curr) => prev + curr, 0) / (b - a + 1);
     currentsCathode.push(
-      (currentsCathodeRaw[i - 1] + currentsCathodeRaw[i] + currentsCathodeRaw[i + 1]) / 3,
+      avg,
     );
   }
-  currentsCathode.push(currentsCathodeRaw[currentsCathodeRaw.length - 1]);
 
   return { tensionsAnode, currentsCathode };
 }
