@@ -23,6 +23,12 @@ body {
     width: 100%;
  }
 
+ @media screen and (max-width:1300px) {
+    #chart_tubes {
+        flex-direction: column;
+    }
+ }
+ 
 #chart_tubes {
     display: flex;
 }
