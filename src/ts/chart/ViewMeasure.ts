@@ -18,6 +18,8 @@ export default class ViewMeasure {
 
   private measuresManager: MeasuresManager;
 
+  private tubesManager: TubesManager;
+
   private viewTubeMeasures: Map<Tube, ViewTubeMeasure> = new Map();
 
   private tableHtml: HTMLTableElement = <HTMLTableElement> document.createElement('table');
@@ -73,15 +75,9 @@ export default class ViewMeasure {
 
     this.allMeasuresHtml.appendChild(this.htmlElement);
 
-    const tubeMeasureCreateHandler = (_: TubesManager, tube: Tube) => {
-      this.createViewTubeMeasure(tube);
-    };
-    tubesManager.OnCreateTube.on(tubeMeasureCreateHandler);
+    tubesManager.OnCreateTube.on(this.tubeMeasureCreateHandler);
 
-    const tubeMeasureRemoveHandler = (_: TubesManager, tube: Tube) => {
-      this.removeViewTubeMeasure(tube);
-    };
-    tubesManager.OnRemoveTube.on(tubeMeasureRemoveHandler);
+    tubesManager.OnRemoveTube.on(this.tubeMeasureRemoveHandler);
 
     tubesManager.getTubes().forEach((tube: Tube) => {
       const newViewTubeMeasure = new ViewTubeMeasure(
@@ -89,7 +85,17 @@ export default class ViewMeasure {
       );
       this.viewTubeMeasures.set(tube, newViewTubeMeasure);
     });
+
+    this.tubesManager = tubesManager;
   }
+
+  private tubeMeasureCreateHandler = (_: TubesManager, tube: Tube) => {
+    this.createViewTubeMeasure(tube);
+  };
+
+  private tubeMeasureRemoveHandler = (_: TubesManager, tube: Tube) => {
+    this.removeViewTubeMeasure(tube);
+  };
 
   public getColor(): Color {
     return this.color;
@@ -99,8 +105,19 @@ export default class ViewMeasure {
     return this.shape;
   }
 
-  public removeDiv() {
+  private removeDiv() {
     this.allMeasuresHtml.removeChild(this.htmlElement);
+  }
+
+  public remove() {
+    this.removeDiv();
+    this.tubesManager.OnCreateTube.off(this.tubeMeasureCreateHandler);
+    this.tubesManager.OnRemoveTube.off(this.tubeMeasureRemoveHandler);
+
+    this.viewTubeMeasures.forEach((element: ViewTubeMeasure) => {
+      element.remove();
+    });
+    this.viewTubeMeasures.clear();
   }
 
   private createViewTubeMeasure(tube: Tube) {
@@ -112,7 +129,7 @@ export default class ViewMeasure {
 
   private removeViewTubeMeasure(tube: Tube) {
     const viewTubeMeasure = <ViewTubeMeasure> this.viewTubeMeasures.get(tube);
-    viewTubeMeasure.deleteHtml();
+    viewTubeMeasure.remove();
     this.viewTubeMeasures.delete(tube);
   }
 }

@@ -82,7 +82,7 @@ export default class ViewMeasuresManager {
       this.colors.push(viewMeasure.getColor());
     }
 
-    viewMeasure.removeDiv();
+    viewMeasure.remove();
 
     this.onRemoveViewMeasure.trigger(this, viewMeasure);
   }

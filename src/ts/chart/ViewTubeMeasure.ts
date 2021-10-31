@@ -1,7 +1,5 @@
 import MeasuresManager from '../controler/MeasuresManager';
-import Capture from '../model/Capture';
 import Tube from '../model/Tube';
-import TubeMode from '../TubeMode';
 
 export default class ViewTubeMeasure {
   private uAnode: number;
@@ -41,16 +39,26 @@ export default class ViewTubeMeasure {
     this.invalidResultHtml.appendChild(this.invalidReasonHtml);
     this.updateInvalid('/');
 
-    this.tube.OnCreateCapture.on((tube: Tube, capture: Capture) => this.updateDom());
-    this.tube.OnRemoveCapture.on((tube: Tube, capture: Capture) => this.updateDom());
-    this.tube.OnModeChange.on((tube: Tube, mode: TubeMode) => this.updateDom());
-    this.tube.OnSelectedCaptureChange.on((tube: Tube, capture: Capture | null) => this.updateDom());
+    this.tube.OnCreateCapture.on(this.updateDomHandler);
+    this.tube.OnRemoveCapture.on(this.updateDomHandler);
+    this.tube.OnModeChange.on(this.updateDomHandler);
+    this.tube.OnSelectedCaptureChange.on(this.updateDomHandler);
 
     this.updateDom();
   }
 
-  public deleteHtml() {
+  private updateDomHandler = () => { this.updateDom(); };
+
+  private deleteHtml() {
     this.measureTableHtml.removeChild(this.tableRowHtml);
+  }
+
+  public remove() {
+    this.tube.OnCreateCapture.off(this.updateDomHandler);
+    this.tube.OnRemoveCapture.off(this.updateDomHandler);
+    this.tube.OnModeChange.off(this.updateDomHandler);
+    this.tube.OnSelectedCaptureChange.off(this.updateDomHandler);
+    this.deleteHtml();
   }
 
   private updateDom() {
