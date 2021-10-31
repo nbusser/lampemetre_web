@@ -3,6 +3,7 @@ import MeasuresManager from './controler/MeasuresManager';
 import TubesManager from './controler/TubesManager';
 import ViewMeasuresManager from './controler/ViewMeasuresManager';
 import ViewTubesManager from './controler/ViewTubesManager';
+import Export from './Export';
 
 const tubesManager: TubesManager = new TubesManager();
 const measureManager: MeasuresManager = new MeasuresManager();
@@ -12,3 +13,5 @@ const viewMeasureManager = new ViewMeasuresManager(measureManager, tubesManager)
 
 const rootHtml: HTMLElement = <HTMLElement>document.getElementById('chart');
 const _ = new Plot(rootHtml, viewTubesManager, viewMeasureManager, measureManager);
+
+const exporter = new Export(tubesManager, measureManager);
