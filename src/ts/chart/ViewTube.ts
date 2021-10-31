@@ -130,7 +130,10 @@ export default class ViewTube {
       const parsed = Number.parseFloat(prompted);
       if (!Number.isNaN(parsed)) {
         const uGrid = Math.abs(parsed);
-        const result = await performCapture(uGrid);
+        const slidingFactor: number = Number.parseInt(
+          (<HTMLInputElement>document.getElementById('slidingFactor')).value, 10,
+        );
+        const result = await performCapture(uGrid, slidingFactor);
         this.tube.createCapture(
           result.tensionsAnode,
           uGrid,

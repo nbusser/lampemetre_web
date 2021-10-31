@@ -138,7 +138,7 @@ export type CaptureData = {
 };
 
 export default async function performCapture(
-  uGrid: number,
+  uGrid: number, slidingFactor: number,
 ): Promise<CaptureData> {
   const serialConnection: SerialPort = await getSerialConnection();
 
@@ -166,7 +166,7 @@ export default async function performCapture(
   }
 
   // Sliding window average
-  const k = 4;
+  const k = slidingFactor;
   const currentsCathode = [];
   for (let i = 0; i < currentsCathodeRaw.length - k; i += 1) {
     const a = Math.max(0, i - k);
