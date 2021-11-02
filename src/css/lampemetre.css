@@ -70,11 +70,6 @@ body {
     align-self: center;
 }
 
-.div_select_mode {
-    display: flex;
-    margin-bottom: 15%;
-}
-
 .warning_sign {
     width: 1em;
     height: 1em;

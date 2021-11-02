@@ -1,27 +1,18 @@
 import Signal from '../Signal';
-import TubeMode from '../TubeMode';
 import Capture from './Capture';
 
 export default class Tube {
   public name: string;
 
-  public mode: TubeMode;
-
   public captures: Map<number, Capture> = new Map();
 
   public selectedCapture: Capture | null = null;
-
-  private readonly onModeChange = new Signal<Tube, TubeMode>();
 
   private readonly onCreateCapture = new Signal<Tube, Capture>();
 
   private readonly onRemoveCapture = new Signal<Tube, Capture>();
 
   private readonly onSelectedCaptureChange = new Signal<Tube, Capture | null>();
-
-  public get OnModeChange(): Signal<Tube, TubeMode> {
-    return this.onModeChange;
-  }
 
   public get OnCreateCapture(): Signal<Tube, Capture> {
     return this.onCreateCapture;
@@ -35,14 +26,8 @@ export default class Tube {
     return this.onSelectedCaptureChange;
   }
 
-  constructor(name: string, mode: TubeMode) {
+  constructor(name: string) {
     this.name = name;
-    this.mode = mode;
-  }
-
-  changeMode(newMode: TubeMode) {
-    this.mode = newMode;
-    this.OnModeChange.trigger(this, newMode);
   }
 
   createCapture(uAnode: number[], uGrid: number, values: number[]) {

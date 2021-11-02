@@ -2,7 +2,6 @@ import TubesManager from '../controler/TubesManager';
 import Capture from '../model/Capture';
 import Tube from '../model/Tube';
 import performCapture from '../Serial';
-import TubeMode from '../TubeMode';
 import Color from './Color';
 
 export default class ViewTube {
@@ -64,27 +63,6 @@ export default class ViewTube {
       this.tubesManager.removeTube(this.tube);
     });
     tubeHeaderDiv.appendChild(removeTubeBtn);
-
-    const modeDiv = document.createElement('div');
-    modeDiv.classList.add('div_select_mode');
-    const selectMode: HTMLSelectElement = document.createElement('select');
-    Object.keys(TubeMode).forEach((modeStr) => {
-      if (Number.isNaN(Number.parseInt(modeStr, 10))) {
-        const option: HTMLOptionElement = document.createElement('option');
-        option.value = modeStr;
-        option.text = modeStr;
-        option.defaultSelected = modeStr === TubeMode[tube.mode];
-        selectMode.options.add(option);
-      }
-    });
-    selectMode.addEventListener('change', () => {
-      const newMode = TubeMode[selectMode.selectedOptions[0].value as keyof typeof TubeMode];
-      if (newMode !== undefined) {
-        this.tube.changeMode(newMode);
-      }
-    });
-    modeDiv.appendChild(selectMode);
-    this.tubeLi.appendChild(modeDiv);
 
     const capturesDiv = document.createElement('div');
     capturesDiv.className = 'div_tube_captures';

@@ -1,7 +1,6 @@
 import Capture from '../model/Capture';
 import Tube from '../model/Tube';
 import Signal from '../Signal';
-import TubeMode from '../TubeMode';
 
 export default class MeasuresManager {
   private measuresMap: Map<number, boolean> = new Map();
@@ -52,10 +51,6 @@ export default class MeasuresManager {
 
     if (!this.measureExists(uAnode)) {
       throw Error(`No measure for tension value ${uAnode}V`);
-    }
-
-    if (tube.mode !== TubeMode.Triode) {
-      return 'Seul le mode triode est supporté';
     }
 
     const gridCapture = tube.captures.get(uGrid);

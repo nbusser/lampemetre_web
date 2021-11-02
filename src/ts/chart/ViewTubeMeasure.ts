@@ -41,7 +41,6 @@ export default class ViewTubeMeasure {
 
     this.tube.OnCreateCapture.on(this.updateDomHandler);
     this.tube.OnRemoveCapture.on(this.updateDomHandler);
-    this.tube.OnModeChange.on(this.updateDomHandler);
     this.tube.OnSelectedCaptureChange.on(this.updateDomHandler);
 
     this.updateDom();
@@ -56,7 +55,6 @@ export default class ViewTubeMeasure {
   public remove() {
     this.tube.OnCreateCapture.off(this.updateDomHandler);
     this.tube.OnRemoveCapture.off(this.updateDomHandler);
-    this.tube.OnModeChange.off(this.updateDomHandler);
     this.tube.OnSelectedCaptureChange.off(this.updateDomHandler);
     this.deleteHtml();
   }

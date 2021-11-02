@@ -1,6 +1,5 @@
 import Tube from '../model/Tube';
 import Signal from '../Signal';
-import TubeMode from '../TubeMode';
 
 export default class TubesManager {
   private tubesList: Array<Tube> = [];
@@ -21,8 +20,8 @@ export default class TubesManager {
     return this.onRemoveTube;
   }
 
-  public createTube(name: string, mode: TubeMode) {
-    const tube = new Tube(name, mode);
+  public createTube(name: string) {
+    const tube = new Tube(name);
     this.tubesList.push(tube);
     this.onCreateTube.trigger(this, tube);
 
