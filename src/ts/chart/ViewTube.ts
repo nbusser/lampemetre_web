@@ -96,8 +96,12 @@ export default class ViewTube {
     });
 
     const sliderDiv = document.createElement('div');
-    sliderDiv.className = 'div_slider';
+    sliderDiv.classList.add('slider_container');
     this.tubeLi.appendChild(sliderDiv);
+
+    const sliderName = document.createElement('span');
+    sliderName.textContent = 'Lissage:';
+    sliderDiv.appendChild(sliderName);
 
     const slider = document.createElement('input');
     slider.classList.add('slider');

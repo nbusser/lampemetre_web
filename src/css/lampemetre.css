@@ -40,8 +40,6 @@ body {
 }
 
 .li_tube {
-    margin-right: 1em;
-    margin-bottom: 1em;
     list-style: none;
     border: 2px solid black;
     border-radius: 2%;
@@ -57,8 +55,15 @@ body {
 }
 
 .tube_capture_button_inline {
-    display: flex;
-    align-items: baseline;
+    display: inline;
+}
+
+.tube_name {
+    display: inline;
+}
+
+.div_tube_captures {
+    margin-top: 0.5em;
 }
 
 .div_new_capture {
@@ -67,7 +72,8 @@ body {
 
 .btn_tube_capture {
     margin-left: 5%;
-    align-self: center;
+    display:inline;
+    vertical-align: text-bottom;
 }
 
 .warning_sign {
@@ -82,13 +88,13 @@ body {
     text-align: center;
 }
 
-.radio_select_capture {
-    display: flex;
-}
-
 .capture_list {
     list-style: none;
     padding-left: 0;
+}
+
+.captures_list_header {
+    display: inline;
 }
 
 td {
@@ -111,4 +117,15 @@ table {
 tbody {
     box-shadow: 0 0 0 1px black;
     border-radius: 5px;
+}
+
+.slider_container {
+    margin-top: 0.5em;
+    width: min-content;
+}
+
+.slider {
+    display: inline-block;
+    max-width: 50%;
+    vertical-align: bottom;
 }
