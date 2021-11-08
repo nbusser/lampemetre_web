@@ -79,13 +79,22 @@ async function acquireTensionsAnode(
   return uAnodeSamples;
 }
 
+export enum SamplingMode {
+  AN1,
+  AN2,
+}
+
 async function acquireCurrentCathode(
   serialReader: ReadableStreamDefaultReader<Uint8Array>,
   serialWriter: WritableStreamDefaultWriter<Uint8Array>,
   uGrid: number,
+  samplingMode: SamplingMode,
 ) {
   const iCathodeSample = [];
   try {
+    // The value "scale" depends on the sampling mode
+    const samplingMultiplier = samplingMode === SamplingMode.AN1 ? (1 / 32) : (1 / 4);
+
     const uGridToSend = 150 + (uGrid * 2);
 
     await writeByteSerial(serialWriter, uGridToSend);
@@ -93,7 +102,7 @@ async function acquireCurrentCathode(
     const bytesToRead = 128;
     const readBuffer = await readBytesSerialPackUint16(serialReader, bytesToRead, 15000);
     for (let i = 0; i < readBuffer.length; i += 1) {
-      const current = (readBuffer[i] * (1 / 32));
+      const current = readBuffer[i] * samplingMultiplier;
       iCathodeSample.push(current);
     }
   } catch (error) {
@@ -137,6 +146,26 @@ export type CaptureData = {
   currentsCathode: number[],
 };
 
+async function captureSerial(
+  serialReader: ReadableStreamDefaultReader<Uint8Array>,
+  serialWriter: WritableStreamDefaultWriter<Uint8Array>,
+  uGrid: number, samplingMode: SamplingMode,
+): Promise<CaptureData> {
+  const tensionsAnode = await acquireTensionsAnode(serialReader, serialWriter);
+
+  const sampling = samplingMode === SamplingMode.AN1 ? 32 : 50;
+
+  await writeByteSerial(serialWriter, sampling);
+
+  const currentsCathode = await acquireCurrentCathode(
+    serialReader, serialWriter, uGrid, samplingMode,
+  );
+
+  await writeByteSerial(serialWriter, 105);
+
+  return { tensionsAnode, currentsCathode };
+}
+
 export default async function performCapture(
   uGrid: number, slidingFactor: number,
 ): Promise<CaptureData> {
@@ -145,17 +174,29 @@ export default async function performCapture(
   const serialReader = (<ReadableStream<Uint8Array>>serialConnection.readable).getReader();
   const serialWriter = (<WritableStream<Uint8Array>>serialConnection.writable).getWriter();
 
-  let tensionsAnode;
-  let currentsCathodeRaw;
+  let captureData: CaptureData;
+  let tensionsAnode: number[];
+  let currentsCathodeRaw: number[];
+
   try {
-    tensionsAnode = await acquireTensionsAnode(serialReader, serialWriter);
+    // Perform capture once in sampling mode AN1 (Imax < 32mA)
+    captureData = await captureSerial(
+      serialReader, serialWriter, uGrid, SamplingMode.AN1,
+    );
+    tensionsAnode = captureData.tensionsAnode;
+    currentsCathodeRaw = captureData.currentsCathode;
 
-    const samplingMode = 32; // Always use 32mA sampling mode since we do not have to compute scales
-    await writeByteSerial(serialWriter, samplingMode);
-
-    currentsCathodeRaw = await acquireCurrentCathode(serialReader, serialWriter, uGrid);
-
-    await writeByteSerial(serialWriter, 105);
+    // Counts the number of values being arround max capturable value 32mA
+    const epsilon = 0.1;
+    const edge = currentsCathodeRaw.filter((current) => Math.abs(current - 32) < epsilon);
+    if (edge.length >= 5) {
+      // If this number exceeds 5, performs a second capture with sampling mode AN2
+      captureData = await captureSerial(
+        serialReader, serialWriter, uGrid, SamplingMode.AN2,
+      );
+      tensionsAnode = captureData.tensionsAnode;
+      currentsCathodeRaw = captureData.currentsCathode;
+    }
   } finally {
     serialReader.cancel();
     serialReader.releaseLock();
