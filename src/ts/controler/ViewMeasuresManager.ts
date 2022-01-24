@@ -56,6 +56,23 @@ export default class ViewMeasuresManager {
     };
     this.measuresManager.OnRemoveMeasure.on(onRemoveMeasureHandler);
 
+    document.getElementById('btn_add_custom_measure')?.addEventListener('click', () => {
+      const uMeasuresPrompt = prompt('Tension grille', '');
+      if (uMeasuresPrompt === null) {
+        return;
+      }
+      const uMeasures = uMeasuresPrompt.split(' ');
+
+      for (let i = 0; i < uMeasures.length; i += 1) {
+        const prompted = uMeasures[i];
+
+        const parsed = Number.parseFloat(prompted);
+        if (!Number.isNaN(parsed)) {
+          this.measuresManager.createMeasure(parsed);
+        }
+      }
+    });
+
     document.getElementById('btn_clear_measures')?.addEventListener('click', () => {
       this.measuresManager.clearMeasures();
     });
