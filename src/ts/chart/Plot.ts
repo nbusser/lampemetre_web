@@ -40,6 +40,9 @@ export default class Plot {
         size: 18,
       },
     },
+    legend: {
+      title: { text: 'Tension grille' },
+    },
   };
 
   constructor(rootHtml: HTMLElement,
