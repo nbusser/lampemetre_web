@@ -72,6 +72,12 @@ export default class ViewTubeMeasure {
     }
 
     try {
+      const iCathode = this.measuresManager.getSelectedIcathode(
+        this.uAnode,
+        this.tube,
+        uGrid,
+      );
+
       const internalResistance = this.measuresManager.computeInternalResistance(
         this.uAnode,
         this.tube,
@@ -89,6 +95,12 @@ export default class ViewTubeMeasure {
         this.tube,
         uGrid,
       );
+
+      if (typeof iCathode === 'number') {
+        this.tableRowHtml.innerHTML += `<td>${iCathode} A</td>`;
+      } else {
+        this.tableRowHtml.innerHTML += this.getInvalidFieldHTML(iCathode);
+      }
 
       if (typeof internalResistance === 'number') {
         this.tableRowHtml.innerHTML += `<td>${internalResistance.toFixed(1)} kOhm</td>`;
@@ -115,7 +127,7 @@ export default class ViewTubeMeasure {
 
   private updateInvalid(reason: string) {
     this.tableRowHtml.innerHTML = `<th>${this.tube.name}</th>`;
-    for (let i = 0; i < 3; i += 1) {
+    for (let i = 0; i < 4; i += 1) {
       this.tableRowHtml.innerHTML += this.getInvalidFieldHTML(reason);
     }
   }

@@ -59,6 +59,7 @@ export default class Export {
         { name: 'Tension anode mesure', totalsRowLabel: '', filterButton: false },
         { name: 'Nom du tube', totalsRowLabel: '', filterButton: false },
         { name: 'Tension grille', totalsRowFunction: 'none', filterButton: false },
+        { name: 'Courant cathode', totalsRowLabel: 'none', filterButton: false },
         { name: 'Résistance interne', totalsRowFunction: 'none', filterButton: false },
         { name: 'Transductance', totalsRowFunction: 'none', filterButton: false },
         { name: 'Facteur d\'amplification', totalsRowFunction: 'none', filterButton: false },
@@ -73,10 +74,16 @@ export default class Export {
           if (measureGrid !== null) {
             const values = [uAnode, tube.name, measureGrid.uGrid];
 
+            const iCathode = this.measuresManager.getSelectedIcathode(
+              uAnode, tube, measureGrid.uGrid,
+            );
+            let val = typeof iCathode === 'string' ? '/' : iCathode;
+            values.push(val);
+
             const resistance = this.measuresManager.computeInternalResistance(
               uAnode, tube, measureGrid.uGrid,
             );
-            let val = typeof resistance === 'string' ? '/' : resistance;
+            val = typeof resistance === 'string' ? '/' : resistance;
             values.push(val);
 
             const transductance = this.measuresManager.computeTransductance(

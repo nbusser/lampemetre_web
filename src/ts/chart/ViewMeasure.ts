@@ -65,6 +65,7 @@ export default class ViewMeasure {
     this.tableBody.innerHTML = (`
       <tr>
         <th></th>
+        <th>Courant cathode</th>
         <th>Résistance</th>
         <th>Transductance</th>
         <th>μ (coef)</th>

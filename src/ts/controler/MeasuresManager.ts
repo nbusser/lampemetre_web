@@ -90,6 +90,21 @@ export default class MeasuresManager {
     return closestUanodeIndex;
   };
 
+  public getSelectedIcathode(uAnode: number, tube: Tube, uGrid: number | null) : number | string {
+    if (tube.captures.size < 1) {
+      return 'Le tube doit contenir au moins une capture';
+    }
+
+    const gridCapture = this.checkAndGetCapture(uAnode, tube, uGrid);
+    if (typeof gridCapture === 'string') {
+      return gridCapture;
+    }
+
+    const closestUanodeIndex = this.getClosestUanode(gridCapture, uAnode);
+
+    return Number.parseFloat(gridCapture.iCathode[closestUanodeIndex].toFixed(2));
+  }
+
   public computeInternalResistance(uAnode: number, tube:Tube, uGrid: number | null)
     : number | string {
     if (tube.captures.size < 1) {
