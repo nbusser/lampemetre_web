@@ -54,12 +54,26 @@ export default class ViewMeasure {
 
     this.htmlElement = document.createElement('div');
     this.htmlElement.classList.add('measure');
+
     const title = document.createElement('h2');
     title.classList.add('measure_title');
     title.style.textAlign = 'center';
     title.textContent = `${uAnodeMeasure}V`;
     title.style.color = this.color.toString();
-    this.htmlElement.appendChild(title);
+
+    const removeMeasure = document.createElement('button');
+    removeMeasure.classList.add('btn_remove_measure');
+    removeMeasure.textContent = '-';
+    removeMeasure.addEventListener('click', () => {
+      this.measuresManager.removeMeasure(this.uAnodeMeasure);
+    });
+
+    const measureHeader = document.createElement('div');
+    measureHeader.classList.add('measures_header');
+    measureHeader.appendChild(title);
+    measureHeader.appendChild(removeMeasure);
+
+    this.htmlElement.appendChild(measureHeader);
     this.htmlElement.appendChild(this.tableHtml);
 
     this.tableBody.innerHTML = (`

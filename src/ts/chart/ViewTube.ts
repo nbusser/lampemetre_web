@@ -55,8 +55,7 @@ export default class ViewTube {
     tubeHeaderDiv.appendChild(title);
 
     const removeTubeBtn = document.createElement('button');
-    removeTubeBtn.classList.add('btn_tube_capture');
-    removeTubeBtn.classList.add('btn_tube');
+    removeTubeBtn.classList.add('inline_btn');
     removeTubeBtn.classList.add('btn_remove_tube');
     removeTubeBtn.textContent = '-';
     removeTubeBtn.addEventListener('click', () => {
@@ -81,8 +80,7 @@ export default class ViewTube {
 
     const addCaptureBtn = document.createElement('button');
     addCaptureBtn.textContent = '+';
-    addCaptureBtn.classList.add('btn_tube_capture');
-    addCaptureBtn.classList.add('btn_capture');
+    addCaptureBtn.classList.add('inline_btn');
     addCaptureBtn.classList.add('btn_new_capture');
     addCaptureBtn.addEventListener('click', () => this.createNewCapture());
     newCaptureDiv.appendChild(addCaptureBtn);
@@ -168,7 +166,7 @@ export default class ViewTube {
     <input type="radio" name="selectedCapture${this.tubesManager.getTubeId(this.tube)}" value=${capture.toString()}>
     <div class="tube_capture_button_inline">
       <span class="capture_value">${capture.toString()}</span>
-      <button class="btn_tube_capture btn_capture btn_remove_capture">-</button>
+      <button class="inline_btn btn_remove_capture">-</button>
     </div>
     </label>`;
     // Radio button

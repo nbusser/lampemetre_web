@@ -19,7 +19,18 @@ textarea {
     display: inline-block;
 }
 
+.measures_header {
+    text-align: center;
+}
+
+.btn_remove_measure {
+    margin-left: 1%;
+    display:inline;
+    vertical-align: text-bottom;
+}
+
 .measure_title {
+    display: inline;
     margin: 0 0 0.2em 0;
 }
 
@@ -74,7 +85,7 @@ textarea {
     display:flex;
 }
 
-.btn_tube_capture {
+.inline_btn {
     margin-left: 5%;
     display:inline;
     vertical-align: text-bottom;
