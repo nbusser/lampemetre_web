@@ -27,6 +27,18 @@ export default class Plot {
     width: 900,
     height: 600,
     shapes: this.annotations,
+    xaxis: {
+      title: 'Tension anode (V)',
+      titlefont: {
+        size: 18,
+      },
+    },
+    yaxis: {
+      title: 'Intensité cathode (A)',
+      titlefont: {
+        size: 18,
+      },
+    },
   };
 
   constructor(rootHtml: HTMLElement,
