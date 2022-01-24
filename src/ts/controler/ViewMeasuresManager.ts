@@ -20,6 +20,12 @@ export default class ViewMeasuresManager {
     new Color(0, 128, 21, 1.0), // Dark green
     new Color(77, 0, 153, 1.0), // Purple
     new Color(230, 191, 0, 1.0), // Orange
+    new Color(93, 206, 216, 1.0), // Cyan
+    new Color(93, 216, 165, 1.0), // Pale green
+    new Color(252, 230, 60, 1.0), // Yellow
+    new Color(252, 126, 233, 1.0), // Pink
+    new Color(156, 167, 252, 1.0), // Lila
+    new Color(130, 69, 5, 1.0), // Brown
   );
 
   private defaultColor: Color = new Color(0, 0, 0, 1.0);
