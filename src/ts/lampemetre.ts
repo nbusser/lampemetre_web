@@ -12,6 +12,6 @@ const viewTubesManager = new ViewTubesManager(tubesManager);
 const viewMeasureManager = new ViewMeasuresManager(measureManager, tubesManager);
 
 const rootHtml: HTMLElement = <HTMLElement>document.getElementById('chart');
-const _ = new Plot(rootHtml, viewTubesManager, viewMeasureManager, measureManager);
+const _ = new Plot(rootHtml, tubesManager, viewTubesManager, viewMeasureManager, measureManager);
 
 const exporter = new Export(tubesManager, measureManager);
