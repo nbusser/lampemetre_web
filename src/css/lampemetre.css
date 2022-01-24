@@ -2,6 +2,10 @@ body {
     background-color: white;
 }
 
+textarea {
+    font-size: large;
+}
+
 #params {
     display: flex;
 }
