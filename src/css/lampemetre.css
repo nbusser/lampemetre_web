@@ -80,7 +80,7 @@ body {
     width: 1em;
     height: 1em;
     display: inline-block;
-    background-image: url('/img/warning.svg');
+    background-image: url('/src/img/warning.svg');
     background-size: contain;
 }
 
