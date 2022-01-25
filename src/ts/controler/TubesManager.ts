@@ -20,13 +20,15 @@ export default class TubesManager {
     return this.onRemoveTube;
   }
 
-  public createTube(name: string) {
+  public createTube(name: string): Tube {
     const tube = new Tube(name);
     this.tubesList.push(tube);
     this.onCreateTube.trigger(this, tube);
 
     this.tubeToTubeId.set(tube, this.nextTubeId);
     this.nextTubeId += 1;
+
+    return tube;
   }
 
   public getTubes(): Array<Tube> {
