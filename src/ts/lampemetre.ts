@@ -15,5 +15,9 @@ const viewMeasureManager = new ViewMeasuresManager(measureManager, tubesManager)
 const rootHtml: HTMLElement = <HTMLElement>document.getElementById('chart');
 const _ = new Plot(rootHtml, viewTubesManager, viewMeasureManager, measureManager);
 
-const importer = new Import(tubesManager);
-const exporter = new Export(tubesManager, measureManager);
+const csvFileInput: HTMLInputElement = <HTMLInputElement>document.getElementById('input_import_excel');
+const btnImport: HTMLButtonElement = <HTMLButtonElement>document.getElementById('btn_import');
+const importer = new Import(csvFileInput, btnImport, tubesManager);
+
+const btnExport: HTMLButtonElement = <HTMLButtonElement>document.getElementById('btn_export');
+const exporter = new Export(btnExport, tubesManager, measureManager);

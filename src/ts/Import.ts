@@ -7,7 +7,7 @@ import Capture from './model/Capture';
 export default class Import {
   private tubeManager: TubesManager;
 
-  private csvFileInput: HTMLInputElement = <HTMLInputElement>document.getElementById('input_import_excel');
+  private csvFileInput: HTMLInputElement;
 
   // Triggered when file is selected in the file browser
   private readSelectedFile = (evt: any) => {
@@ -41,11 +41,16 @@ export default class Import {
     reader.readAsArrayBuffer(file);
   };
 
-  constructor(tubesManager: TubesManager) {
+  constructor(
+    csvFileInput: HTMLInputElement,
+    btnImport: HTMLButtonElement,
+    tubesManager: TubesManager,
+  ) {
+    this.csvFileInput = csvFileInput;
     this.tubeManager = tubesManager;
 
     // Clicking the button 'Import' actually triggers a click on the file browser
-    document.getElementById('btn_import')?.addEventListener('click', () => this.csvFileInput.click());
+    btnImport.addEventListener('click', () => this.csvFileInput.click());
     // When the file is chosen, runs readSelectedFile function
     this.csvFileInput.addEventListener('change', this.readSelectedFile);
   }

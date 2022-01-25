@@ -10,12 +10,16 @@ export default class Export {
 
   private measuresManager: MeasuresManager;
 
-  private exportFilename = 'export.csv';
+  private exportFilename = 'export';
 
-  constructor(tubesManager: TubesManager, measuresManager: MeasuresManager) {
+  constructor(
+    btnExport: HTMLButtonElement,
+    tubesManager: TubesManager,
+    measuresManager: MeasuresManager,
+  ) {
     this.tubeManager = tubesManager;
     this.measuresManager = measuresManager;
-    document.getElementById('btn_export')?.addEventListener('click', () => this.performExport());
+    btnExport.addEventListener('click', () => this.performExport());
   }
 
   private async performExport() {
@@ -101,7 +105,7 @@ export default class Export {
             measuresTable.addRow(values);
             measuresTable.commit();
           }
-        } catch (e: Error) {
+        } catch (e: any) {
           console.log(e.message);
         }
       });

@@ -30,8 +30,14 @@
             </div>
         </div>
 
+        <!--Hidden input text field used for file browsing. Triggered by clicking btn_load-->
+        <input id="input_load" type="file" name="file" accept=".json" style="display:none;" />
+        <button id="btn_load">Charger</button>
+
+        <button id="btn_save">Sauvegarder</button>
+
         <!--Hidden input text field used for file browsing. Triggered by clicking btn_import-->
-        <input id="input_import_excel" type="file" name="file" style="display:none;" />
+        <input id="input_import_excel" type="file" name="file" accept=".xlsx" style="display:none;" />
         <button id="btn_import">Importer</button>
 
         <button id="btn_export">Exporter</button>
