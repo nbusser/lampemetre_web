@@ -2,7 +2,6 @@
   "name": "lampemetre_web",
   "version": "1.0.0",
   "description": "Re-writting of LibertyBASIC program lampemetre",
-  "main": "lampemetre.js",
   "directories": {
     "doc": "doc"
   },
