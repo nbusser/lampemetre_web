@@ -53,7 +53,7 @@ export default class Timer {
   }
 
   public blockIfNecessary(): boolean {
-    if (this.shouldBlock() && this.isOver()) {
+    if (this.shouldBlock() && !this.isOver()) {
       alert('Les lampes de sont pas encore chaudes. Veuillez attendre la fin du minuteur');
       return true;
     }

@@ -2,6 +2,7 @@ import TubesManager from '../controler/TubesManager';
 import Capture from '../model/Capture';
 import Tube from '../model/Tube';
 import performCapture from '../Serial';
+import Timer from '../Timer';
 import Color from './Color';
 
 export default class ViewTube {
@@ -21,10 +22,14 @@ export default class ViewTube {
 
   private slider: HTMLInputElement;
 
-  constructor(tube: Tube, color: Color, tubesManager: TubesManager) {
+  private timer: Timer;
+
+  constructor(tube: Tube, color: Color, tubesManager: TubesManager, timer: Timer) {
     this.tubesManager = tubesManager;
 
     this.tube = tube;
+
+    this.timer = timer;
 
     const tubeCreateCaptureHandler = (t: Tube, capture: Capture) => {
       this.addCapture(capture);
@@ -119,6 +124,10 @@ export default class ViewTube {
   }
 
   private async createNewCapture() {
+    if (this.timer.blockIfNecessary()) {
+      return;
+    }
+
     const uGridPrompt = prompt('Tension grille', '');
     if (uGridPrompt === null) {
       return;

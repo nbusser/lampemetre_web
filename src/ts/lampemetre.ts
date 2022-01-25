@@ -16,7 +16,7 @@ const timer = new Timer(timerText, resetTimerBtn, blockCheckbox, 60);
 const tubesManager: TubesManager = new TubesManager();
 const measureManager: MeasuresManager = new MeasuresManager();
 
-const viewTubesManager = new ViewTubesManager(tubesManager);
+const viewTubesManager = new ViewTubesManager(tubesManager, timer);
 const viewMeasureManager = new ViewMeasuresManager(measureManager, tubesManager);
 
 const rootHtml: HTMLElement = <HTMLElement>document.getElementById('chart');

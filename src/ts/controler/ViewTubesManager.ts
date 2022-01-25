@@ -3,6 +3,7 @@ import Color from '../chart/Color';
 import ViewTube from '../chart/ViewTube';
 import Tube from '../model/Tube';
 import Signal from '../Signal';
+import Timer from '../Timer';
 import TubesManager from './TubesManager';
 
 export default class ViewTubesManager {
@@ -30,6 +31,8 @@ export default class ViewTubesManager {
 
   private readonly onRemoveViewTube = new Signal<ViewTubesManager, ViewTube>();
 
+  private timer: Timer;
+
   public get OnCreateViewTube(): Signal<ViewTubesManager, ViewTube> {
     return this.onCreateViewTube;
   }
@@ -38,8 +41,10 @@ export default class ViewTubesManager {
     return this.onRemoveViewTube;
   }
 
-  constructor(tubesManager: TubesManager) {
+  constructor(tubesManager: TubesManager, timer: Timer) {
     this.tubesManager = tubesManager;
+
+    this.timer = timer;
 
     const createTubeHandler = (_: TubesManager, tube: Tube) => {
       this.createViewTube(tube);
@@ -69,7 +74,7 @@ export default class ViewTubesManager {
       color = this.defaultColor;
     }
 
-    const createdViewTube = new ViewTube(tube, color, this.tubesManager);
+    const createdViewTube = new ViewTube(tube, color, this.tubesManager, this.timer);
 
     this.tubesList.set(tube, createdViewTube);
 
