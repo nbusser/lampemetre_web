@@ -31,7 +31,10 @@ export default class Timer {
   }
 
   private updateTimer(decrement: boolean) {
-    this.timerText.textContent = this.secondsLeft.toString();
+    this.timerText.textContent = this.secondsLeft.toLocaleString('fr', {
+      minimumIntegerDigits: 2,
+      useGrouping: false,
+    });
 
     if (this.secondsLeft === 0) {
       this.timerText.style.color = '#000000';

@@ -6,15 +6,27 @@ textarea {
     font-size: large;
 }
 
+#timer_header {
+    margin-top: 0.3em;
+}
+
 #div_timer {
-    display: inline;
+    border: 1px solid black;
+    display: inline-block;
+    padding: 0.6em;
 }
 
 #btn_timer {
+    vertical-align: text-bottom;
     display: inline;
 }
 
+#timer_alert_span {
+    padding-left: 0.3em;
+}
+
 #timer_text {
+    font-size: 21px;
     display: inline;
 }
 
