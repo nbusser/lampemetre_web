@@ -6,6 +6,12 @@ import ViewTubesManager from './controler/ViewTubesManager';
 import Export from './Export';
 import Import from './Import';
 import SaveLoad from './SaveLoad';
+import Timer from './Timer';
+
+const timerText: HTMLParagraphElement = <HTMLParagraphElement>document.getElementById('timer_text');
+const resetTimerBtn: HTMLButtonElement = <HTMLButtonElement>document.getElementById('btn_timer');
+const blockCheckbox: HTMLInputElement = <HTMLInputElement>document.getElementById('timer_alert');
+const timer = new Timer(timerText, resetTimerBtn, blockCheckbox, 60);
 
 const tubesManager: TubesManager = new TubesManager();
 const measureManager: MeasuresManager = new MeasuresManager();

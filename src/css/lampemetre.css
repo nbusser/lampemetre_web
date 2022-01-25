@@ -6,6 +6,18 @@ textarea {
     font-size: large;
 }
 
+#div_timer {
+    display: inline;
+}
+
+#btn_timer {
+    display: inline;
+}
+
+#timer_text {
+    display: inline;
+}
+
 #params {
     display: flex;
 }
