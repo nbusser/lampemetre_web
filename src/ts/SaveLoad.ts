@@ -99,7 +99,10 @@ export default class SaveLoad {
       });
 
       frozenData.measures.forEach((uAnode: number) => {
-        this.measuresManager.createMeasure(uAnode);
+        // Only creates measure if it doesn't already exists, preventing exception
+        if (!this.measuresManager.measureExists(uAnode)) {
+          this.measuresManager.createMeasure(uAnode);
+        }
       });
 
       this.notesTextArea.value = frozenData.notes;
