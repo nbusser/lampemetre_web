@@ -1,56 +1,66 @@
 <!DOCTYPE html>
 <html>
 
-    <head>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" href="css/lampemetre.css">
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/lampemetre.css">
+</head>
 
-    <body>
+<body>
 
-        <h1>Lampemetre</h1>
+    <h1>Lampemetre</h1>
 
-        <div>
-            <h3>Notes:</h3>
-            <textarea id="notes">Tension grille 2: </textarea>
-        </div>
+    <div>
+        <h3>Notes:</h3>
+        <textarea id="notes">Tension grille 2: </textarea>
+    </div>
 
-        <div id="chart_tubes">
-            <div id="chart"></div>
+    <div id="chart_tubes">
+        <div id="chart"></div>
 
-            <div id="tubes">
-                <h2>Tubes:</h2>
-                <div id="tubes_control_panel">
-                    <button id="btn_add_tube">+</button>
-                    <button id="btn_clear">Vider</button>
-                </div>
-                <div id="all_tubes">
-                    <ul id="ul_tubes"></ul>
-                </div>
+        <div id="tubes">
+            <h2>Tubes:</h2>
+            <div id="tubes_control_panel">
+                <button id="btn_add_tube">+</button>
+                <button id="btn_clear">Vider</button>
+            </div>
+            <div id="all_tubes">
+                <ul id="ul_tubes"></ul>
             </div>
         </div>
+    </div>
 
-        <!--Hidden input text field used for file browsing. Triggered by clicking btn_load-->
-        <input id="input_load" type="file" name="file" accept=".json" style="display:none;" />
-        <button id="btn_load">Charger</button>
+    <section id=measures_section>
+        <h2>Mesures</h2>
+        <button id="btn_add_custom_measure">+</button>
+        <button id="btn_clear_measures">Vider</button>
+        <div id="measures"></div>
+    </section>
 
-        <button id="btn_save">Sauvegarder</button>
+    <div>
+        <div>
+            <h3>Sauvegarder le projet</h3>
 
-        <!--Hidden input text field used for file browsing. Triggered by clicking btn_import-->
-        <input id="input_import_excel" type="file" name="file" accept=".xlsx" style="display:none;" />
-        <button id="btn_import">Importer</button>
+            <!--Hidden input text field used for file browsing. Triggered by clicking btn_load-->
+            <input id="input_load" type="file" name="file" accept=".json" style="display:none;" />
+            <button id="btn_load">Charger</button>
 
-        <button id="btn_export">Exporter</button>
-
-        <section id=measures_section>
-            <h2>Mesures</h2>
-            <button id="btn_add_custom_measure">+</button>
-            <button id="btn_clear_measures">Vider</button>
-            <div id="measures"></div>
-        </section>
+            <button id="btn_save">Sauvegarder</button>
+        </div>
         
+        <div>
+            <h3>Fichier excel</h3>
 
-    </body>
+            <!--Hidden input text field used for file browsing. Triggered by clicking btn_import-->
+            <input id="input_import_excel" type="file" name="file" accept=".xlsx" style="display:none;" />
+            <button id="btn_import">Importer</button>
 
-    <script type="module" src="ts/lampemetre.ts"></script>
+            <button id="btn_export">Exporter</button>
+        </div>
+    </div>
+
+</body>
+
+<script type="module" src="ts/lampemetre.ts"></script>
+
 </html>
