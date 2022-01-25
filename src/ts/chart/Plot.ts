@@ -34,7 +34,7 @@ export default class Plot {
       },
     },
     yaxis: {
-      title: 'Intensité cathode (A)',
+      title: 'Intensité cathode (mA)',
       titlefont: {
         size: 18,
       },

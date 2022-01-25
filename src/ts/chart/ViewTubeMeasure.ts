@@ -97,7 +97,7 @@ export default class ViewTubeMeasure {
       );
 
       if (typeof iCathode === 'number') {
-        this.tableRowHtml.innerHTML += `<td>${iCathode} A</td>`;
+        this.tableRowHtml.innerHTML += `<td>${iCathode} mA</td>`;
       } else {
         this.tableRowHtml.innerHTML += this.getInvalidFieldHTML(iCathode);
       }
