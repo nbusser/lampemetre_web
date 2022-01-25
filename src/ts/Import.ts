@@ -1,58 +1,25 @@
 import * as Excel from 'exceljs';
-// import * as fsp from 'fs/promises';
 import TubesManager from './controler/TubesManager';
+import { ReadMethod, setupFileLoader } from './LoadFileHelper';
 import Capture from './model/Capture';
 
 // Very clumsy excel file importer
 export default class Import {
   private tubeManager: TubesManager;
 
-  private csvFileInput: HTMLInputElement;
-
-  // Triggered when file is selected in the file browser
-  private readSelectedFile = (evt: any) => {
-    const errorMessage = 'Une erreur est survenue pendant la lecture du fichier';
-
-    if (evt.target === null) {
-      alert(errorMessage);
-      return;
-    }
-
-    // Selected file object
-    const file = evt.target.files[0];
-
-    // Triggered when the file reader finished to read the file
-    const fileReaderFinished = (event: any) => {
-      if (event.target === null
-        || typeof event.target.result === 'string'
-        || event.target.result === null) {
-        alert(errorMessage);
-        return;
-      }
-      // If no error, sends the array buffer to perform input and resets the file browser input
-      this.performImport(event.target.result);
-      this.csvFileInput.value = '';
-    };
-
-    // Reads the selected file
-    const reader = new FileReader();
-    reader.addEventListener('load', fileReaderFinished);
-
-    reader.readAsArrayBuffer(file);
-  };
-
   constructor(
     csvFileInput: HTMLInputElement,
     btnImport: HTMLButtonElement,
     tubesManager: TubesManager,
   ) {
-    this.csvFileInput = csvFileInput;
     this.tubeManager = tubesManager;
 
-    // Clicking the button 'Import' actually triggers a click on the file browser
-    btnImport.addEventListener('click', () => this.csvFileInput.click());
-    // When the file is chosen, runs readSelectedFile function
-    this.csvFileInput.addEventListener('change', this.readSelectedFile);
+    setupFileLoader(
+      csvFileInput,
+      btnImport,
+      ReadMethod.ArrayBuffer,
+      (content: ArrayBuffer) => this.performImport(content),
+    );
   }
 
   // Parses selected xlsx file

@@ -1,6 +1,7 @@
 import * as fs from 'file-saver';
 import MeasuresManager from './controler/MeasuresManager';
 import TubesManager from './controler/TubesManager';
+import { ReadMethod, setupFileLoader } from './LoadFileHelper';
 import { FrozenData, FrozenTube } from './FrozenData';
 import Capture from './model/Capture';
 import Tube from './model/Tube';
@@ -18,36 +19,6 @@ export default class SaveLoad {
   private btnLoad: HTMLButtonElement;
 
   private notesTextArea: HTMLTextAreaElement;
-
-  // Triggered when file is selected in the file browser
-  private readSelectedFile = (evt: any) => {
-    const errorMessage = 'Une erreur est survenue pendant la lecture du fichier';
-    if (evt.target === null) {
-      alert(errorMessage);
-      return;
-    }
-
-    // Selected file object
-    const file = evt.target.files[0];
-
-    // Triggered when the file reader finished to read the file
-    const fileReaderFinished = (event: any) => {
-      if (event.target === null
-        || event.target.result === null) {
-        alert(errorMessage);
-        return;
-      }
-      // If no error, sends the array buffer to perform input and resets the file browser input
-      this.load(event.target.result);
-      this.fileInput.value = '';
-    };
-
-    // Reads the selected file
-    const reader = new FileReader();
-    reader.addEventListener('load', fileReaderFinished);
-
-    reader.readAsText(file);
-  };
 
   constructor(
     btnSave: HTMLButtonElement,
@@ -68,8 +39,12 @@ export default class SaveLoad {
 
     this.btnSave.addEventListener('click', () => this.save());
 
-    this.btnLoad.addEventListener('click', () => this.fileInput.click());
-    this.fileInput.addEventListener('change', (evt) => this.readSelectedFile(evt));
+    setupFileLoader(
+      this.fileInput,
+      this.btnLoad,
+      ReadMethod.Text,
+      (content: string) => this.load(content),
+    );
   }
 
   // Save all the workspace's information to a JSON file
@@ -128,8 +103,8 @@ export default class SaveLoad {
       });
 
       this.notesTextArea.value = frozenData.notes;
-    } catch (Error) {
-      alert('Une erreur est survenue durant le chargement du fichier. Le fichier est invalide.');
+    } catch (e: any) {
+      alert(`Une erreur est survenue durant le chargement du fichier. Le fichier est invalide. Erreur: ${e.message}`);
     }
   }
 }
