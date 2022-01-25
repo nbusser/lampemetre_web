@@ -81,9 +81,34 @@ Pour effectuer une mesure:
 
 Le programme affichera alors en bas de l'écran le calcul de la résistance interne, de la transductance et du facteur d'amplification pour la tension grille selectionnée.
 
-### Exportation
+### Sauvegarde de l'espace de travail
+
+En utilisant le bouton Sauvegarder, vous pouvez sauvegarder votre espace de travail.
+
+Les tubes, captures, mesures et notes personnelles seront sauvegardées dans un fichier json.
+
+En utilisant le bouton Charger, vous pouvez alors retrouver votre environnement de travail.
+
+### Importation/exportation Excel
 
 Cliquez sur le bouton Exporter pour compiler les données dans un fichier excel. Le fichier sera alors téléchargé par votre navigateur.
+
+Vous pouvez réaliser la manipulation inverse en utilisant le bouton Importer.
+Les mesures ne seront pas importées.
+Pensez à respecter scrupuleusement le format.
+
+Au vu des contraintes quentraine le format de sauvegarde, nous vous recommandons de n'utiliser la fonctionnalité d'importation de fichier Excel uniquement si vous souhaitez entrer votre datasheet à la main.
+Dans le cas où vous souhaitez simplement sauvegarder votre espace de travail, référez vous aux boutons Sauvegarder et Charger.
+
+### Minuterie
+
+Vous pouvez trouver en haut de l'écran un espace dédié à la minuterie.
+
+Ce minuteur vous permet de vous assurer que vos lampes sont bien chaudes avant de lancer les captures.
+
+Appuyez sur Reset pour remettre le compteur sur 60 secondes.
+
+En cochant la case 'Bloquer les capture', vous empêcherez de réaliser des captures avant la fin de la minuterie.
 
 ## Contribution
 
