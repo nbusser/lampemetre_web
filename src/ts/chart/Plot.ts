@@ -9,7 +9,6 @@ import ViewTubesManager from '../controler/ViewTubesManager';
 import ViewTube from './ViewTube';
 import Tube from '../model/Tube';
 import MeasuresManager from '../controler/MeasuresManager';
-import TubesManager from '../controler/TubesManager';
 
 interface PlotHTMLElement extends HTMLElement {
   on(eventName: string, handler: Function): void;
@@ -46,14 +45,13 @@ export default class Plot {
   };
 
   constructor(rootHtml: HTMLElement,
-    tubesManager: TubesManager,
     viewTubesManager: ViewTubesManager,
     viewMeasuresManager: ViewMeasuresManager,
     measureManager: MeasuresManager) {
     const createViewTubeHandler = (v: ViewTubesManager, viewTube: ViewTube) => {
       viewTube.tube.OnCreateCapture.on(
         (t: Tube, capture: Capture) => {
-          this.drawCapture(<number>tubesManager.getTubeId(t), capture, viewTube.getColor());
+          this.drawCapture(capture, viewTube.getColor());
         },
       );
       viewTube.tube.OnRemoveCapture.on(
@@ -113,13 +111,12 @@ export default class Plot {
     }
   }
 
-  public drawCapture(tubeId: number, capture: Capture, tubeColor: Color) {
+  public drawCapture(capture: Capture, tubeColor: Color) {
     const trace: PlotData = <PlotData>{
       x: capture.uAnode,
       y: capture.iCathode,
       mode: 'lines+markers',
       type: 'scatter',
-      legendgroup: tubeId.toString(),
       marker: {
         color: tubeColor.toString(),
       },
