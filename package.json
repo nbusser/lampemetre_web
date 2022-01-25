@@ -27,6 +27,7 @@
   "homepage": "https://github.com/nbusser/lampemetre_web#readme",
   "dependencies": {
     "@parcel/config-default": "^2.0.0-alpha.3",
+    "@types/file-saver": "^2.0.5",
     "@types/w3c-web-serial": "^1.0.2",
     "exceljs": "^4.3.0",
     "file-saver": "^2.0.5",
