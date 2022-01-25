@@ -1,3 +1,4 @@
+import { FrozenTube } from '../FrozenData';
 import Signal from '../Signal';
 import Capture from './Capture';
 
@@ -65,5 +66,19 @@ export default class Tube {
     }
     this.selectedCapture = newSelectedCapture;
     this.onSelectedCaptureChange.trigger(this, newSelectedCapture);
+  }
+
+  public toJSON(): FrozenTube {
+    const captures = [...this.captures.values()];
+    let selectedCaptureIndex = -1;
+    if (this.selectedCapture !== null) {
+      selectedCaptureIndex = captures.findIndex((capture) => capture === this.selectedCapture);
+    }
+
+    return {
+      name: this.name,
+      captures,
+      selectedCaptureIndex,
+    };
   }
 }
