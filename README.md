@@ -27,7 +27,7 @@ Dans le futur, ces fonctionalités seront sûrement implémentées par d'autres 
 
 Si vous utilisez l'application en mode hors-ligne, vous aurez besoin d'utiliser un quelquonque serveur http.
 
-Nous conseillons d'utiliser [python](https://www.python.org/).
+Nous conseillons d'utiliser le serveur http inclus dans [python](https://www.python.org/).
 
 ## Installation
 
@@ -40,7 +40,7 @@ Suivez [ce lien](https://nbusser.github.io/lampemetre_web/) pour utiliser Lampem
 ### Mode hors ligne
 
 1. Téléchargez l'une des [versions](https://github.com/nbusser/lampemetre_web/releases) du logiciel et extrayez le contenu de l'archive dans un dossier quelquonque.
-2. Lancez ensuite le fichier `run.bat`. Ce fichier utilisera une commande python permettant de lancer un serveur http sur votre machine.
+2. Lancez ensuite le fichier `run.bat`. Ce fichier utilisera une commande python permettant de lancer un serveur http sur votre machine. L'installation préalable de python est requise.
 3. Lancez Google Chrome et tapez `localhost` dans la barre de lien.
 
 ## Utilisation
@@ -62,11 +62,11 @@ Exemple: `1 0.5 -2` effectuera 3 captures pour des tensions grille de -1V, -0.5V
 
 #### Lissage
 
-Lampemetre web implémente un algorithme de correction de bruit après l'acquisition.
+Lampemetre web implémente un algorithme de correction de bruit après acquisition des données.
 
 Il est possible de régler la sévérité de cet algorithme en manipulant le curseur dédié.
 
-Pour la cohérence des données, nous vous obligeons a garder le même facteur de lissage pour toutes les captures d'un même tube.
+Pour assurer la cohérence des données, nous vous obligeons a garder le même facteur de lissage pour toutes les captures d'un même tube.
 
 Plus le facteur de lissage est élevé, moins les données seront bruitées. En contrepartie, vous perderez en nombre de données capturées.
 
@@ -80,6 +80,8 @@ Pour effectuer une mesure:
 2. Cliquez ensuite sur un des points des courbes
 
 Le programme affichera alors en bas de l'écran le calcul de la résistance interne, de la transductance et du facteur d'amplification pour la tension grille selectionnée.
+
+Vous pouvez également cliquer sur le bouton **+** dans l'onglet mesure pour effectuer une mesure pour la tension anode de votre choix.
 
 ### Sauvegarde de l'espace de travail
 
