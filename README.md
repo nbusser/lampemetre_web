@@ -1,5 +1,11 @@
 # Lampemetre web
 
+**Projet non-maintenu.**
+
+**Consultez le nouveau dépôt post-migration [Lampemetre.Vue](https://github.com/nbusser/lampemetre_vue).**
+
+___
+
 Lampemetre web est un programme permettant la visualisation des mesures acquises par [Module Lampemètre Analyseur Traceur de Courbes](https://www.radioelec.com/module-lampemetre-analyseur-traceur-de-courbes-vacuum-tube-analyzer-xml-352_387-828.html) de [RadioElec](https://www.radioelec.com).
 
 Le programme Liberty BASIC fourni par RadioElec lors de l'achat du module souffre de nombreuses limitations.
